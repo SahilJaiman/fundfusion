@@ -2,9 +2,13 @@
 import React from 'react'
 import { Button } from 'antd';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation'
 
 
 export default function Hero() {
+
+  const router = useRouter();
+
   return (
     <div className="min-h-screen flex flex-col justify-between items-center mx-auto p-6 md:p-12 lg:flex-row bg-gradient-to-r from-gray-700 via-gray-900 to-black">
       <div className="flex flex-col p-6 space-y-10  lg:w-1/2 ">
@@ -22,8 +26,8 @@ export default function Hero() {
           From Ideas to Impact - Connect with a Diverse Community of Investors and Donors
         </p>
         <div className="mx-auto space-x-4 lg:mx-0">
-          <Button className='ring-2' type="primary" shape="round" >Get Started</Button>
-          <Button className='ring-2' type="primary" shape="round" >Learn More</Button>
+          <Button onClick={()=>router.push('/campaign/new')} className='ring-2' type="primary" shape="round" >Get Started</Button>
+          <Button  className='ring-2' type="primary" shape="round" >Learn More</Button>
 
 
         </div>
