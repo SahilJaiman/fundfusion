@@ -5,6 +5,7 @@ class PostLedger:
         return sp.TRecord(
                 author = sp.TAddress,
                 title = sp.TString,
+                campaignType = sp.TString,
                 thumbnail_url = sp.TString,
                 ipfs_url = sp.TString,
                 timestamp = sp.TTimestamp,
@@ -17,16 +18,17 @@ class Contract(sp.Contract):
     def __init__(self):
         # Storage
         self.init_storage(
-            admin = sp.address("tz1VLj6WqWLeFjn4BWdoScpN752qSEyqwXFV"),
+            admin = sp.address("tz1WT1Lm3giwXCQ3Q1dVANjhrS2Nv1L9SHim"),
             posts = sp.big_map(l = {}, tkey = sp.TNat, tvalue = PostLedger.get_type()),
             next_count = sp.nat(0)
         )
 
 
     @sp.entry_point
-    def create_post(self, ipfs_url, thumbnail_url, title, fr_goal):
+    def create_post(self, ipfs_url, thumbnail_url, title,campaignType, fr_goal):
         sp.set_type(ipfs_url, sp.TString)
         sp.set_type(title, sp.TString)
+        sp.set_type(campaignType, sp.TString)
         sp.set_type(thumbnail_url, sp.TString)
         sp.set_type(fr_goal, sp.TMutez)
  
@@ -35,6 +37,7 @@ class Contract(sp.Contract):
             ipfs_url = ipfs_url,
             thumbnail_url = thumbnail_url,
             title = title,
+            campaignType = campaignType,
             timestamp = sp.now,
             fundraising_goal = fr_goal,
             fundraised = sp.mutez(0),
@@ -71,17 +74,18 @@ def main():
     scenario += cont
 
     weeblet = sp.address("tz1VLj6WqWLeFjn4BWdoScpN752qSEyqwXFV")
-    other = sp.test_account ("oth")
-    other1 = sp.test_account ("oth1")
+    bob = sp.test_account ("bob")
+    alice = sp.test_account ("alice")
 
     cont.create_post(
         ipfs_url="ok",
         thumbnail_url="ok",
         title="Demo Post, ghgh",
+        campaignType="Donation",
         fr_goal = sp.tez(69)
     ).run(sender = weeblet)
 
-    cont.send_tip(0).run(sender=other1, amount=sp.mutez(10000))
-    cont.send_tip(0).run(sender=other, amount=sp.tez(1))
-    cont.send_tip(0).run(sender=weeblet, amount=sp.tez(2), valid=False)
-    cont.send_tip(0).run(sender=other, amount=sp.tez(2))
+    cont.send_tip(0).run(sender=alice, amount=sp.mutez(10000))
+    cont.send_tip(0).run(sender=bob, amount=sp.tez(1))
+    cont.send_tip(0).run(sender=alice, amount=sp.tez(2), valid=False)
+    cont.send_tip(0).run(sender=bob, amount=sp.tez(2))
