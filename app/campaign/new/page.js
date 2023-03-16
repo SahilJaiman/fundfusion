@@ -141,7 +141,7 @@ export default function NewCampaign() {
         };
 
         fetchPrice();
-        const intervalId = setInterval(fetchPrice, 60000); // Update price every 60 seconds
+        const intervalId = setInterval(fetchPrice, 60000); 
         return () => clearInterval(intervalId);
     }, []);
 
