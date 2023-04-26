@@ -8,6 +8,34 @@ import { getAccount, connectWallet } from '@/utils/wallet';
 import { useForm } from 'antd/lib/form/Form';
 import { createPostOperation } from '@/utils/operation';
 
+//IPFS
+import { create } from "ipfs-http-client";
+var Buffer = require('buffer/').Buffer
+const infuraApiKey = '2Ow0S5v4gpn9zS7dlv448fKFYG0'
+const infuraApiSecret = '7edd32513089c463c741160b6bd08937'
+const auth = 'Basic ' + Buffer.from(infuraApiKey + ':' + infuraApiSecret).toString('base64');
+
+
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+import dynamic from "next/dynamic";
+
+const MDEditor = dynamic(
+    () => import("@uiw/react-md-editor").then((mod) => mod.default),
+    { ssr: false }
+);
+const EditerMarkdown = dynamic(
+    () =>
+        import("@uiw/react-md-editor").then((mod) => {
+            return mod.default.Markdown;
+        }),
+    { ssr: false }
+);
+const Markdown = dynamic(
+    () => import("@uiw/react-markdown-preview").then((mod) => mod.default),
+    { ssr: false }
+);
+
 const layout = {
     labelCol: {
         span: 4,
@@ -18,28 +46,26 @@ const layout = {
 };
 
 
-
-
-
-
-
 export default function NewCampaign() {
 
     const [form] = useForm();
-    const [price, setPrice] = useState(null);
+    const [XTZPrice, setXTZPrice] = useState(null);
     const [amt, setAmt] = useState(0);
-    const [imgUrl, setImgUrl] = useState(null);
+    const [imgUrl, setImgUrl] = useState("");
     const [account, setAccount] = useState(null);
     const [loading, setLoading] = useState(null);
     const [messageApi, contextHolder] = message.useMessage();
+    const [ipfs, setIpfs] = useState(undefined);
+    const [value, setValue] = useState('**Sahil**');
+
 
     const onConnectWallet = async () => {
         await connectWallet();
         const activeAccount = await getAccount();
         setAccount(activeAccount);
-
-
     };
+
+
     const onFinish = async (values) => {
         setLoading(true);
         messageApi.open({
@@ -96,6 +122,41 @@ export default function NewCampaign() {
         handleReset();
     };
 
+    const handleUpload = async (info) => {
+        const fileList = info.fileList;
+        const latestFile = fileList[fileList.length - 1];
+        if (latestFile) {
+            try {
+                messageApi.open({
+                    key: '2',
+                    type: 'loading',
+                    content: 'Uploading to IPFS...',
+                    duration: 0
+                });
+                const uploadResponse = await ipfs.add(latestFile.originFileObj);
+                const ipfsLink = `https://ipfs.io/ipfs/${uploadResponse.cid.toString()}`;
+                console.log(ipfsLink);
+                setImgUrl(ipfsLink);
+                messageApi.open({
+                    key: '2',
+                    type: 'success',
+                    content: `${latestFile.name} Uploaded successfully to IPFS`,
+                    duration: 5
+                });
+            } catch (err) {
+                console.error("IPFS error : ", err);
+                messageApi.open({
+                    key: '2',
+                    type: 'error',
+                    content: 'Failed to upload file to IPFS',
+                    duration: 5,
+                });
+
+            }
+        }
+
+    };
+
 
     const handleReset = () => {
         form.resetFields();
@@ -114,8 +175,7 @@ export default function NewCampaign() {
     }
 
     const onClose = () => {
-        setImgUrl(null);
-
+        setImgUrl("");
     }
 
     const normFile = (e) => {
@@ -134,16 +194,32 @@ export default function NewCampaign() {
                 const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tezos&vs_currencies=usd');
                 const data = await response.json();
                 const tezosPriceInUSD = data.tezos.usd;
-                setPrice(tezosPriceInUSD);
+                setXTZPrice(tezosPriceInUSD);
             } catch (error) {
                 console.error(error);
             }
         };
 
+        const connectToIpfs = async () => {
+            const ipfsNode = create({
+                host: 'ipfs.infura.io',
+                port: 5001,
+                protocol: 'https',
+                headers: {
+                    authorization: auth,
+                },
+            });
+            setIpfs(ipfsNode);
+
+        }
+
         fetchPrice();
-        const intervalId = setInterval(fetchPrice, 60000); 
+        connectToIpfs();
+        const intervalId = setInterval(fetchPrice, 60000);
         return () => clearInterval(intervalId);
     }, []);
+
+
 
 
     const router = useRouter();
@@ -156,10 +232,11 @@ export default function NewCampaign() {
             }}
         >
             {contextHolder}
-            <div className='min-h-screen p-2 bg-black'>
+            <div className='min-h-screen'>
+
+                {contextHolder}
                 <Button className='fixed hidden md:block left-4 top-8' onClick={() => router.push('/')} size='large' type="link">&#8592; Back to Home</Button>
                 <h1 className='my-8 text-center mt-6 text-white font-bold font-mono text-2xl md:text-4xl' >Create a New Campaign <NotificationOutlined /></h1>
-
                 <div className=" flex gap-4 p-4 flex-col w-full items-center justify-center ">
 
                     <div className='relative flex gap-2 justify-center max-w-2xl  overflow-hidden '>
@@ -171,7 +248,7 @@ export default function NewCampaign() {
                                     fallback="https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png"
 
                                 />
-                                <Button onClick={onClose} icon={<CloseOutlined />} className='absolute right-2 top-2 ' type="primary" danger />
+                                <Button onClick={onClose} icon={<CloseOutlined />} className='absolute right-2 top-2 flex items-center justify-center  ' type="primary" danger />
                             </>
                         }
                     </div>
@@ -187,7 +264,7 @@ export default function NewCampaign() {
 
 
                         onFinish={onFinish}
-                        className="mt-4 md:mt-4 w-full max-w-md sm:max-w-2xl md:max-w-4xl lg:max-w-6xl p-4 ring-1  shadow-slate-800 shadow-lg rounded-lg"
+                        className="mt-4 md:mt-4 w-full max-w-md sm:max-w-2xl md:max-w-4xl lg:max-w-6xl p-8 ring-1  shadow-slate-800 shadow-lg rounded-lg"
                     >
                         <Form.Item
                             name={'name'}
@@ -214,10 +291,11 @@ export default function NewCampaign() {
                                 <InputNumber
                                     className='w-full'
                                     prefix="$"
-                                    value={price * amt}
+                                    value={XTZPrice * amt}
                                     controls={false}
                                     readOnly
                                     defaultValue={3}
+                                    formatter={value => `${Number(value).toFixed(3)}`}
 
                                 />
                             </Space>
@@ -231,7 +309,8 @@ export default function NewCampaign() {
 
 
                         >
-                            <Input value={imgUrl} onChange={onChangeImgUrl} />
+                            <Input value={imgUrl} onChange={onChangeImgUrl} allowClear />
+
                         </Form.Item>
                         <Form.Item
                             name="upload"
@@ -240,9 +319,12 @@ export default function NewCampaign() {
                             getValueFromEvent={normFile}
 
                         >
-                            <Upload maxCount={1} name="cover" listType="picture">
-                                <Button className='' icon={<UploadOutlined />}>Click to upload</Button>
+                            <Upload maxCount={1} name="cover" listType="picture" beforeUpload={() => false} onChange={handleUpload}>
+                                <Button className="flex items-center justify-center" icon={<UploadOutlined className="" />}>
+                                    Click to upload
+                                </Button>
                             </Upload>
+
                         </Form.Item>
                         <Form.Item
                             name={'description'}
@@ -252,6 +334,19 @@ export default function NewCampaign() {
                         >
                             <Input.TextArea />
                         </Form.Item>
+
+
+                        <div className='my-4'>
+                            <MDEditor
+                                value={value}
+                                onChange={setValue}
+                                
+                            />
+
+
+                        </div>
+
+
                         <Form.Item
                             name="type"
                             label="Campaign Type"
@@ -312,7 +407,13 @@ export default function NewCampaign() {
                             </Space>
                         </Form.Item>
 
+
                     </Form>
+
+
+
+
+
 
                 </div>
             </div>

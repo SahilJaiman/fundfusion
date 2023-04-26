@@ -3,11 +3,12 @@ import { Inter } from 'next/font/google'
 import styles from './page.module.css'
 import Hero from '@/components/Hero'
 
+
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   return (
-    <div className=" min-h-screen " >
+    <div className=" min-h-screen" >
     
         <Hero />
      
