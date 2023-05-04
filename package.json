@@ -14,10 +14,13 @@
     "@heroicons/react": "^2.0.17",
     "@taquito/beacon-wallet": "^15.1.0",
     "@taquito/taquito": "^15.1.0",
+    "@uiw/react-markdown-preview": "^4.1.13",
+    "@uiw/react-md-editor": "^3.20.10",
     "antd": "^5.3.1",
     "buffer": "^6.0.3",
     "ipfs-http-client": "^60.0.0",
     "next": "13.2.4",
+    "next-remove-imports": "^1.0.11",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
