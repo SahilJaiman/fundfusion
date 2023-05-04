@@ -471,12 +471,12 @@ export default function NewCampaign() {
 
 
                         <div data-color-mode="dark" className='my-8'>
-                            <MDEditor
+                            {/* <MDEditor
                                
                                 value={value}
                                 onChange={setValue}
 
-                            />
+                            /> */}
                         </div>
 
 
