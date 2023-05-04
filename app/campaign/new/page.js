@@ -25,7 +25,7 @@ import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
 
 //IPFS
-const create = dynamic(() => import('ipfs-http-client'), { ssr: false });
+import { create } from 'ipfs-http-client'
 
 
 
