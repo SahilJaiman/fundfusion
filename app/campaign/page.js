@@ -30,6 +30,7 @@ const auth = 'Basic ' + Buffer.from(infuraApiKey + ':' + infuraApiSecret).toStri
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
+
 import ConnectWallet from '@/components/ConnectWallet';
 import { contractAddress } from '@/utils/contract';
 
@@ -290,7 +291,6 @@ export default function NewCampaign() {
         <ConfigProvider
             theme={{
                 algorithm: theme.darkAlgorithm,
-
             }}
         >
             {contextHolder}
@@ -304,7 +304,7 @@ export default function NewCampaign() {
                 <div className="flex  gap-4 mb-12 flex-col w-full items-center justify-center ">
                     <div className='flex  p-2 justify-start'>
                         <Breadcrumb
-                            className=' '
+                       
                             separator="/"
                             items={[
                                 {

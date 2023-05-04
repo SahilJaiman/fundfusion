@@ -19,9 +19,6 @@ function classNames(...classes) {
 
 export default function Navbar() {
 
-
-
-
   return (
     <Disclosure as="nav" className="z-50 sticky top-0 bg-gradient-to-r from-gray-700 via-gray-900 to-black">
       {({ open }) => (
