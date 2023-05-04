@@ -20,11 +20,17 @@ import { useForm } from 'antd/lib/form/Form';
 import { createPostOperation } from '@/utils/operation';
 
 
-//IPFS
-
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
+
+//IPFS
+const create = dynamic(() => import('ipfs-http-client'), { ssr: false });
+
+const infuraApiKey = '2Ow0S5v4gpn9zS7dlv448fKFYG0'
+const infuraApiSecret = '7edd32513089c463c741160b6bd08937'
+const auth = 'Basic ' + Buffer.from(infuraApiKey + ':' + infuraApiSecret).toString('base64');
+
 
 import ConnectWallet from '@/components/ConnectWallet';
 import { contractAddress } from '@/utils/contract';
@@ -82,7 +88,7 @@ export default function NewCampaign() {
             try {
                 if (account) {
                     await createPostOperation(
-                        "",
+                        ipfsContentLink,
                         values.url,
                         values.name,
                         values.description,                        
@@ -93,7 +99,7 @@ export default function NewCampaign() {
                 } else {
                     await onConnectWallet();
                     await createPostOperation(
-                        "",
+                        ipfsContentLink,
                         values.url,
                         values.name,
                         values.description,  
@@ -172,7 +178,43 @@ export default function NewCampaign() {
 
     };
 
-   
+    const uploadContent = async (htmlString) => {
+        if (htmlContent) {
+            try {
+                messageApi.open({
+                    key: '3',
+                    type: 'loading',
+                    content: 'Uploading Content to IPFS...',
+                    duration: 0
+                });
+                const json = {
+                    html: htmlString
+                };
+                const uploadResponse = await ipfs.add(JSON.stringify(json));
+                const ipfsLink = `https://ipfs.io/ipfs/${uploadResponse.cid.toString()}`;
+         
+                setIpfsContent(ipfsLink);
+                messageApi.open({
+                    key: '3',
+                    type: 'success',
+                    content: `Content Uploaded successfully to IPFS`,
+                    duration: 5
+                });
+                return ipfsLink;
+            } catch (err) {
+                console.error("IPFS error : ", err);
+                messageApi.open({
+                    key: '3',
+                    type: 'error',
+                    content: 'Failed to upload content to IPFS',
+                    duration: 5,
+                });
+
+            }
+        }
+
+    };
+
 
 
 
@@ -219,10 +261,21 @@ export default function NewCampaign() {
             }
         };
 
-        
+        const connectToIpfs = async () => {
+            const ipfsNode = create({
+                host: 'ipfs.infura.io',
+                port: 5001,
+                protocol: 'https',
+                headers: {
+                    authorization: auth,
+                },
+            });
+            setIpfs(ipfsNode);
+
+        }
 
         fetchPrice();
-       
+        connectToIpfs();
         const intervalId = setInterval(fetchPrice, 60000);
         return () => clearInterval(intervalId);
     }, []);
