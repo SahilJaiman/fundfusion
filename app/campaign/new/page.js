@@ -27,17 +27,17 @@ const infuraApiKey = '2Ow0S5v4gpn9zS7dlv448fKFYG0'
 const infuraApiSecret = '7edd32513089c463c741160b6bd08937'
 const auth = 'Basic ' + Buffer.from(infuraApiKey + ':' + infuraApiSecret).toString('base64');
 
-import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-markdown-preview/markdown.css";
-import dynamic from "next/dynamic";
+// import "@uiw/react-md-editor/markdown-editor.css";
+// import "@uiw/react-markdown-preview/markdown.css";
+// import dynamic from "next/dynamic";
 import ConnectWallet from '@/components/ConnectWallet';
 import Navbar from '@/components/Navbar';
 import { contractAddress } from '@/utils/contract';
 
-const MDEditor = dynamic(
-    () => import("@uiw/react-md-editor").then((mod) => mod.default),
-    { ssr: false }
-);
+// const MDEditor = dynamic(
+//     () => import("@uiw/react-md-editor").then((mod) => mod.default),
+//     { ssr: false }
+// );
 
 
 const layout = {
