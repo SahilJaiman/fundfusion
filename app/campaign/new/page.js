@@ -1,12 +1,25 @@
 'use client';
 import React, { useState, useEffect } from 'react'
-import { Button, Form, Input, Select, InputNumber, Descriptions, Space, Image, Upload, message } from 'antd';
+import {
+    Button,
+    Form,
+    Input,
+    Select,
+    InputNumber,
+    Descriptions,
+    Space,
+    Image,
+    Upload,
+    message,
+    Breadcrumb
+} from 'antd';
 import { ConfigProvider, theme } from 'antd';
 import { NotificationOutlined, ArrowLeftOutlined, CloseOutlined, UploadOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { getAccount, connectWallet } from '@/utils/wallet';
 import { useForm } from 'antd/lib/form/Form';
 import { createPostOperation } from '@/utils/operation';
+import { htmlContent } from '@/components/SampleCampaign';
 
 //IPFS
 import { create } from "ipfs-http-client";
@@ -15,10 +28,12 @@ const infuraApiKey = '2Ow0S5v4gpn9zS7dlv448fKFYG0'
 const infuraApiSecret = '7edd32513089c463c741160b6bd08937'
 const auth = 'Basic ' + Buffer.from(infuraApiKey + ':' + infuraApiSecret).toString('base64');
 
-
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
+import ConnectWallet from '@/components/ConnectWallet';
+import Navbar from '@/components/Navbar';
+import { contractAddress } from '@/utils/contract';
 
 const MDEditor = dynamic(
     () => import("@uiw/react-md-editor").then((mod) => mod.default),
@@ -56,7 +71,12 @@ export default function NewCampaign() {
     const [loading, setLoading] = useState(null);
     const [messageApi, contextHolder] = message.useMessage();
     const [ipfs, setIpfs] = useState(undefined);
-    const [value, setValue] = useState('**Sahil**');
+    const [ipfsContent, setIpfsContent] = useState(null);
+    const [value, setValue] = useState(htmlContent);
+
+    useEffect(() => {
+        console.log("Use Effect", ipfsContent);
+    }, [ipfsContent]);
 
 
     const onConnectWallet = async () => {
@@ -76,50 +96,64 @@ export default function NewCampaign() {
         });
 
         try {
-            if (account) {
-                await createPostOperation(
-                    "",
-                    values.url,
-                    values.name,
-                    values.type,
-                    values.amount,
-                )
+            const ipfsContentLink = await uploadContent(value);
+            console.log("IPFS Content", ipfsContentLink);
+            try {
+                if (account) {
+                    await createPostOperation(
+                        ipfsContentLink,
+                        values.url,
+                        values.name,
+                        values.description,                        
+                        values.type,
+                        values.amount,
+                    )
 
-            } else {
-                await onConnectWallet();
-                await createPostOperation(
-                    "",
-                    values.url,
-                    values.name,
-                    values.type,
-                    values.amount,
-                )
+                } else {
+                    await onConnectWallet();
+                    await createPostOperation(
+                        ipfsContentLink,
+                        values.url,
+                        values.name,
+                        values.description,  
+                        values.type,
+                        values.amount,
+                    )
+
+                }
+
+                messageApi.open({
+                    key: '1',
+                    type: 'success',
+                    content: <>Published <a className='text-blue-600' href={`https://better-call.dev/ghostnet/${contractAddress}/operations`}>View</a></>,
+                    duration: 10,
+                });
+
+
+
+            } catch (error) {
+                messageApi.open({
+                    key: '1',
+                    type: 'error',
+                    content: `Failed Publishing,${error}`,
+                    duration: 5,
+                });
 
             }
-
-            messageApi.open({
-                key: '1',
-                type: 'success',
-                content: <>Published <a className='text-blue-600' href='https://better-call.dev/ghostnet/KT1HVmxrBy4FMiSHhjpHARfmkrmG6VSi2Ajm/operations'>View</a></>,
-                duration: 10,
-            });
-
-
-
         } catch (error) {
+            console.error("Content uploading error : ", err);
             messageApi.open({
                 key: '1',
                 type: 'error',
                 content: 'Failed Publishing',
                 duration: 5,
             });
-
         }
 
 
         setLoading(false);
         console.log(values);
-        handleReset();
+        //handleReset();
     };
 
     const handleUpload = async (info) => {
@@ -135,7 +169,7 @@ export default function NewCampaign() {
                 });
                 const uploadResponse = await ipfs.add(latestFile.originFileObj);
                 const ipfsLink = `https://ipfs.io/ipfs/${uploadResponse.cid.toString()}`;
-                console.log(ipfsLink);
+                console.log("Img Link ", ipfsLink);
                 setImgUrl(ipfsLink);
                 messageApi.open({
                     key: '2',
@@ -156,6 +190,45 @@ export default function NewCampaign() {
         }
 
     };
+
+    const uploadContent = async (htmlString) => {
+        if (htmlContent) {
+            try {
+                messageApi.open({
+                    key: '3',
+                    type: 'loading',
+                    content: 'Uploading Content to IPFS...',
+                    duration: 0
+                });
+                const json = {
+                    html: htmlString
+                };
+                const uploadResponse = await ipfs.add(JSON.stringify(json));
+                const ipfsLink = `https://ipfs.io/ipfs/${uploadResponse.cid.toString()}`;
+                console.log("After Upload", ipfsLink);
+                setIpfsContent(ipfsLink);
+                messageApi.open({
+                    key: '3',
+                    type: 'success',
+                    content: `Content Uploaded successfully to IPFS`,
+                    duration: 5
+                });
+                return ipfsLink;
+            } catch (err) {
+                console.error("IPFS error : ", err);
+                messageApi.open({
+                    key: '3',
+                    type: 'error',
+                    content: 'Failed to upload content to IPFS',
+                    duration: 5,
+                });
+
+            }
+        }
+
+    };
+
+
 
 
     const handleReset = () => {
@@ -194,6 +267,7 @@ export default function NewCampaign() {
                 const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tezos&vs_currencies=usd');
                 const data = await response.json();
                 const tezosPriceInUSD = data.tezos.usd;
+                console.log(tezosPriceInUSD);
                 setXTZPrice(tezosPriceInUSD);
             } catch (error) {
                 console.error(error);
@@ -220,6 +294,12 @@ export default function NewCampaign() {
     }, []);
 
 
+    useEffect(() => {
+        console.log(value);
+    }, [value])
+
+
+
 
 
     const router = useRouter();
@@ -232,14 +312,36 @@ export default function NewCampaign() {
             }}
         >
             {contextHolder}
-            <div className='min-h-screen'>
+            
+            <div className='min-h-screen p-4 relative flex flex-col bg-black'>
 
                 {contextHolder}
-                <Button className='fixed hidden md:block left-4 top-8' onClick={() => router.push('/')} size='large' type="link">&#8592; Back to Home</Button>
-                <h1 className='my-8 text-center mt-6 text-white font-bold font-mono text-2xl md:text-4xl' >Create a New Campaign <NotificationOutlined /></h1>
-                <div className=" flex gap-4 p-4 flex-col w-full items-center justify-center ">
 
-                    <div className='relative flex gap-2 justify-center max-w-2xl  overflow-hidden '>
+
+                <h1 className='mb-4 text-center mt-8 text-white font-bold font-mono text-2xl md:text-4xl' >Create a New Campaign <NotificationOutlined /></h1>
+
+                <div className="flex  gap-4 mb-12 flex-col w-full items-center justify-center ">
+                    <div className='flex  p-2 justify-start'>
+                        <Breadcrumb
+                            className=' '
+                            separator="/"
+                            items={[
+                                {
+
+                                    title: <a onClick={() => router.push('/')} >Home</a>
+                                },
+                                {
+                                    title: <a onClick={() => router.push('/')}>Campaign</a>
+                                },
+                                {
+                                    title: <a onClick={() => router.push('/campaign/new')}>New</a>
+                                },
+
+                            ]}
+                        />
+                    </div>
+
+                    <div className='relative  flex gap-2 justify-center max-w-2xl  overflow-hidden '>
                         {imgUrl &&
                             <>
                                 <Image
@@ -253,7 +355,7 @@ export default function NewCampaign() {
                         }
                     </div>
 
-
+                        <ConnectWallet/>
 
                     <Form
                         {...layout}
@@ -335,18 +437,6 @@ export default function NewCampaign() {
                             <Input.TextArea />
                         </Form.Item>
 
-
-                        <div className='my-4'>
-                            <MDEditor
-                                value={value}
-                                onChange={setValue}
-                                
-                            />
-
-
-                        </div>
-
-
                         <Form.Item
                             name="type"
                             label="Campaign Type"
@@ -390,11 +480,20 @@ export default function NewCampaign() {
                                 ]}
                             />
                         </Form.Item>
+
+
+                        <div data-color-mode="dark" className='my-8'>
+                            <MDEditor
+                               
+                                value={value}
+                                onChange={setValue}
+
+                            />
+                        </div>
+
+
                         <Form.Item
-                            wrapperCol={{
-                                ...layout.wrapperCol,
-                                offset: 10,
-                            }}
+                            className='flex justify-center'
 
                         >
                             <Space>

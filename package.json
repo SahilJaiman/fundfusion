@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
+    "@headlessui/react": "^1.7.14",
+    "@heroicons/react": "^2.0.17",
     "@taquito/beacon-wallet": "^15.1.0",
     "@taquito/taquito": "^15.1.0",
     "@uiw/react-md-editor": "^3.20.8",

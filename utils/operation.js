@@ -3,15 +3,16 @@ import { contractAddress } from "./contract";
 import { tezos } from "./tezos";
 
 
-export const  createPostOperation = async (ipfsurl,imgurl,title,type,goal) => {
+export const createPostOperation = async (ipfsurl,imgurl,title,desc,type,goal) => {
     try {
         const contractInstance = await tezos.wallet.at(contractAddress);
         const op = await contractInstance.methods.create_post(
-            type,
-            goal * 1000000,
             ipfsurl,
+            desc,
+            goal * 1000000,
             imgurl,
-            title,         
+            title,
+            type,
         ).send();
         await op.confirmation(1);
     } catch (err) {
@@ -21,20 +22,6 @@ export const  createPostOperation = async (ipfsurl,imgurl,title,type,goal) => {
 
 
 
-export const placeBetOperation = async (id,team,amt ) => {
-    try {
-        const contractInstance = await tezos.wallet.at(contractAddress);
-        const op = await contractInstance.methods.placeBet(
-                team,
-                id
-        ).send({
-            amount: amt,
-            mutez:false,
-        });
-        await op.confirmation(1);
-    } catch (err) {
-        throw err;
-    }
-};
+
 
 

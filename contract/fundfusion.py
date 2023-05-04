@@ -80,9 +80,9 @@ def main():
     cont.create_post(
         ipfs_url="ok",
         thumbnail_url="ok",
-        title="Demo Post, ghgh",
+        title="Demo Post",
         campaignType="Donation",
-        fr_goal = sp.tez(69)
+        fr_goal = sp.tez(50)
     ).run(sender = weeblet)
 
     cont.send_tip(0).run(sender=alice, amount=sp.mutez(10000))
