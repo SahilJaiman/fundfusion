@@ -6,7 +6,6 @@ import {
     Input,
     Select,
     InputNumber,
-    Descriptions,
     Space,
     Image,
     Upload,
@@ -14,7 +13,7 @@ import {
     Breadcrumb
 } from 'antd';
 import { ConfigProvider, theme } from 'antd';
-import { NotificationOutlined, ArrowLeftOutlined, CloseOutlined, UploadOutlined } from '@ant-design/icons';
+import { NotificationOutlined, CloseOutlined, UploadOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { getAccount, connectWallet } from '@/utils/wallet';
 import { useForm } from 'antd/lib/form/Form';
@@ -39,17 +38,7 @@ const MDEditor = dynamic(
     () => import("@uiw/react-md-editor").then((mod) => mod.default),
     { ssr: false }
 );
-const EditerMarkdown = dynamic(
-    () =>
-        import("@uiw/react-md-editor").then((mod) => {
-            return mod.default.Markdown;
-        }),
-    { ssr: false }
-);
-const Markdown = dynamic(
-    () => import("@uiw/react-markdown-preview").then((mod) => mod.default),
-    { ssr: false }
-);
+
 
 const layout = {
     labelCol: {
@@ -97,7 +86,7 @@ export default function NewCampaign() {
 
         try {
             const ipfsContentLink = await uploadContent(value);
-            console.log("IPFS Content", ipfsContentLink);
+           
             try {
                 if (account) {
                     await createPostOperation(
@@ -169,7 +158,7 @@ export default function NewCampaign() {
                 });
                 const uploadResponse = await ipfs.add(latestFile.originFileObj);
                 const ipfsLink = `https://ipfs.io/ipfs/${uploadResponse.cid.toString()}`;
-                console.log("Img Link ", ipfsLink);
+           
                 setImgUrl(ipfsLink);
                 messageApi.open({
                     key: '2',
@@ -205,7 +194,7 @@ export default function NewCampaign() {
                 };
                 const uploadResponse = await ipfs.add(JSON.stringify(json));
                 const ipfsLink = `https://ipfs.io/ipfs/${uploadResponse.cid.toString()}`;
-                console.log("After Upload", ipfsLink);
+         
                 setIpfsContent(ipfsLink);
                 messageApi.open({
                     key: '3',
@@ -237,13 +226,13 @@ export default function NewCampaign() {
 
     const onChangeInput = (value) => {
 
-        console.log(value);
+
         setAmt(value);
 
     };
 
     const onChangeImgUrl = (e) => {
-        console.log(e.target.value);
+   
         setImgUrl(e.target.value);
     }
 
@@ -252,7 +241,7 @@ export default function NewCampaign() {
     }
 
     const normFile = (e) => {
-        console.log('Upload event:', e);
+ 
         if (Array.isArray(e)) {
             return e;
         }
@@ -315,8 +304,7 @@ export default function NewCampaign() {
             
             <div className='min-h-screen p-4 relative flex flex-col bg-black'>
 
-                {contextHolder}
-
+             
 
                 <h1 className='mb-4 text-center mt-8 text-white font-bold font-mono text-2xl md:text-4xl' >Create a New Campaign <NotificationOutlined /></h1>
 
