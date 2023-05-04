@@ -27,9 +27,6 @@ import dynamic from "next/dynamic";
 //IPFS
 const create = dynamic(() => import('ipfs-http-client'), { ssr: false });
 
-const infuraApiKey = '2Ow0S5v4gpn9zS7dlv448fKFYG0'
-const infuraApiSecret = '7edd32513089c463c741160b6bd08937'
-const auth = 'Basic ' + Buffer.from(infuraApiKey + ':' + infuraApiSecret).toString('base64');
 
 
 import ConnectWallet from '@/components/ConnectWallet';
@@ -266,9 +263,7 @@ export default function NewCampaign() {
                 host: 'ipfs.infura.io',
                 port: 5001,
                 protocol: 'https',
-                headers: {
-                    authorization: auth,
-                },
+           
             });
             setIpfs(ipfsNode);
 
