@@ -22,7 +22,7 @@ import { createPostOperation } from '@/utils/operation';
 
 //IPFS
 import { create } from "ipfs-http-client";
-var Buffer = require('buffer/').Buffer
+
 const infuraApiKey = '2Ow0S5v4gpn9zS7dlv448fKFYG0'
 const infuraApiSecret = '7edd32513089c463c741160b6bd08937'
 const auth = 'Basic ' + Buffer.from(infuraApiKey + ':' + infuraApiSecret).toString('base64');
