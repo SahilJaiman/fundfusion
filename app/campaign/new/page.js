@@ -22,11 +22,17 @@ import { createPostOperation } from '@/utils/operation';
 
 //IPFS
 
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+import dynamic from "next/dynamic";
 
 import ConnectWallet from '@/components/ConnectWallet';
 import { contractAddress } from '@/utils/contract';
 
-
+const MDEditor = dynamic(
+    () => import("@uiw/react-md-editor").then((mod) => mod.default),
+    { ssr: false }
+);
 
 
 const layout = {
@@ -48,7 +54,7 @@ export default function NewCampaign() {
     const [account, setAccount] = useState(null);
     const [loading, setLoading] = useState(null);
     const [messageApi, contextHolder] = message.useMessage();
-
+    const [ipfs, setIpfs] = useState(null);
     const [ipfsContent, setIpfsContent] = useState(null);
     const [value, setValue] = useState();
 
@@ -131,7 +137,43 @@ export default function NewCampaign() {
         //handleReset();
     };
 
-    
+    const handleUpload = async (info) => {
+        const fileList = info.fileList;
+        const latestFile = fileList[fileList.length - 1];
+        if (latestFile) {
+            try {
+                messageApi.open({
+                    key: '2',
+                    type: 'loading',
+                    content: 'Uploading to IPFS...',
+                    duration: 0
+                });
+                const uploadResponse = await ipfs.add(latestFile.originFileObj);
+                const ipfsLink = `https://ipfs.io/ipfs/${uploadResponse.cid.toString()}`;
+           
+                setImgUrl(ipfsLink);
+                messageApi.open({
+                    key: '2',
+                    type: 'success',
+                    content: `${latestFile.name} Uploaded successfully to IPFS`,
+                    duration: 5
+                });
+            } catch (err) {
+                console.error("IPFS error : ", err);
+                messageApi.open({
+                    key: '2',
+                    type: 'error',
+                    content: 'Failed to upload file to IPFS',
+                    duration: 5,
+                });
+
+            }
+        }
+
+    };
+
+   
+
 
 
     const handleReset = () => {
@@ -180,7 +222,7 @@ export default function NewCampaign() {
         
 
         fetchPrice();
-    
+       
         const intervalId = setInterval(fetchPrice, 60000);
         return () => clearInterval(intervalId);
     }, []);
@@ -308,7 +350,7 @@ export default function NewCampaign() {
                             getValueFromEvent={normFile}
 
                         >
-                            <Upload maxCount={1} name="cover" listType="picture" beforeUpload={() => false} >
+                            <Upload maxCount={1} name="cover" listType="picture" beforeUpload={() => false} onChange={handleUpload}>
                                 <Button className="flex items-center justify-center" icon={<UploadOutlined className="" />}>
                                     Click to upload
                                 </Button>
@@ -369,6 +411,14 @@ export default function NewCampaign() {
                         </Form.Item>
 
 
+                        <div data-color-mode="dark" className='my-8'>
+                            <MDEditor
+                               
+                                value={value}
+                                onChange={setValue}
+
+                            />
+                        </div>
 
 
                         <Form.Item
