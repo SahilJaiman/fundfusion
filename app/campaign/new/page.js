@@ -58,13 +58,10 @@ export default function NewCampaign() {
     const [account, setAccount] = useState(null);
     const [loading, setLoading] = useState(null);
     const [messageApi, contextHolder] = message.useMessage();
-    const [ipfs, setIpfs] = useState(undefined);
+    const [ipfs, setIpfs] = useState(null);
     const [ipfsContent, setIpfsContent] = useState(null);
     const [value, setValue] = useState();
 
-    useEffect(() => {
-        console.log("Use Effect", ipfsContent);
-    }, [ipfsContent]);
 
 
     const onConnectWallet = async () => {
@@ -282,10 +279,7 @@ export default function NewCampaign() {
     }, []);
 
 
-    useEffect(() => {
-        console.log(value);
-    }, [value])
-
+   
 
 
 
