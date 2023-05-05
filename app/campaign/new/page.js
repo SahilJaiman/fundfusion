@@ -25,8 +25,11 @@ import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
 
 //IPFS
-import { create } from 'ipfs-http-client'
+import {create as IPFSHTTPClient} from 'ipfs-http-client';
 
+const infuraApiKey = '2Ow0S5v4gpn9zS7dlv448fKFYG0'
+const infuraApiSecret = '7edd32513089c463c741160b6bd08937'
+const auth = 'Basic ' + Buffer.from(infuraApiKey + ':' + infuraApiSecret).toString('base64');
 
 
 import ConnectWallet from '@/components/ConnectWallet';
@@ -259,11 +262,13 @@ export default function NewCampaign() {
         };
 
         const connectToIpfs = async () => {
-            const ipfsNode = create({
+            const ipfsNode = IPFSHTTPClient({
                 host: 'ipfs.infura.io',
                 port: 5001,
                 protocol: 'https',
-           
+                headers: {
+                    authorization: auth,
+                },
             });
             setIpfs(ipfsNode);
 
