@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useRef } from 'react'
 import {
     Button,
     Form,
@@ -10,7 +10,8 @@ import {
     Image,
     Upload,
     message,
-    Breadcrumb
+    Breadcrumb,
+    Steps,
 } from 'antd';
 import { ConfigProvider, theme } from 'antd';
 import { NotificationOutlined, CloseOutlined, UploadOutlined } from '@ant-design/icons';
@@ -25,7 +26,7 @@ import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
 
 //IPFS
-import {create as IPFSHTTPClient} from 'ipfs-http-client';
+import { create } from 'ipfs-http-client'
 
 const infuraApiKey = '2Ow0S5v4gpn9zS7dlv448fKFYG0'
 const infuraApiSecret = '7edd32513089c463c741160b6bd08937'
@@ -43,15 +44,21 @@ const MDEditor = dynamic(
 
 const layout = {
     labelCol: {
-        span: 4,
+        span: 6,
     },
     wrapperCol: {
         span: 20,
     },
 };
 
+const description = '';
 
 export default function NewCampaign() {
+
+    const divRef = useRef(null);
+    const router = useRouter();
+
+    const [height, setHeight] = useState(100);
 
     const [form] = useForm();
     const [XTZPrice, setXTZPrice] = useState(null);
@@ -64,6 +71,11 @@ export default function NewCampaign() {
     const [ipfsContent, setIpfsContent] = useState(null);
     const [value, setValue] = useState();
 
+    const [publishing, setPublishing] = useState('wait');
+    const [uploadingToIpfs, setUploadingToIpfs] = useState('wait');
+    const [uploadingToContract, setUploadingToContract] = useState('wait');
+    const [completed, setCompleted] = useState('wait');
+
 
 
     const onConnectWallet = async () => {
@@ -74,6 +86,7 @@ export default function NewCampaign() {
 
 
     const onFinish = async (values) => {
+        setPublishing('finish')
         setLoading(true);
         messageApi.open({
             key: '1',
@@ -84,14 +97,15 @@ export default function NewCampaign() {
 
         try {
             const ipfsContentLink = await uploadContent(value);
-           
+
             try {
+                setUploadingToContract('process')
                 if (account) {
                     await createPostOperation(
                         ipfsContentLink,
                         values.url,
                         values.name,
-                        values.description,                        
+                        values.description,
                         values.type,
                         values.amount,
                     )
@@ -102,13 +116,14 @@ export default function NewCampaign() {
                         ipfsContentLink,
                         values.url,
                         values.name,
-                        values.description,  
+                        values.description,
                         values.type,
                         values.amount,
                     )
 
                 }
-
+                setUploadingToContract('finish')
+                setCompleted('finish')
                 messageApi.open({
                     key: '1',
                     type: 'success',
@@ -119,6 +134,7 @@ export default function NewCampaign() {
 
 
             } catch (error) {
+                setUploadingToContract('error')
                 messageApi.open({
                     key: '1',
                     type: 'error',
@@ -128,7 +144,8 @@ export default function NewCampaign() {
 
             }
         } catch (error) {
-            console.error("Content uploading error : ", err);
+            setUploadingToIpfs('error')
+            console.error("Content uploading error : ", error);
             messageApi.open({
                 key: '1',
                 type: 'error',
@@ -156,7 +173,7 @@ export default function NewCampaign() {
                 });
                 const uploadResponse = await ipfs.add(latestFile.originFileObj);
                 const ipfsLink = `https://ipfs.io/ipfs/${uploadResponse.cid.toString()}`;
-           
+
                 setImgUrl(ipfsLink);
                 messageApi.open({
                     key: '2',
@@ -179,7 +196,8 @@ export default function NewCampaign() {
     };
 
     const uploadContent = async (htmlString) => {
-        if (htmlContent) {
+        if (htmlString) {
+            setUploadingToIpfs('process')
             try {
                 messageApi.open({
                     key: '3',
@@ -192,7 +210,7 @@ export default function NewCampaign() {
                 };
                 const uploadResponse = await ipfs.add(JSON.stringify(json));
                 const ipfsLink = `https://ipfs.io/ipfs/${uploadResponse.cid.toString()}`;
-         
+
                 setIpfsContent(ipfsLink);
                 messageApi.open({
                     key: '3',
@@ -200,8 +218,10 @@ export default function NewCampaign() {
                     content: `Content Uploaded successfully to IPFS`,
                     duration: 5
                 });
+                setUploadingToIpfs('finish');
                 return ipfsLink;
             } catch (err) {
+                setUploadingToIpfs('error');
                 console.error("IPFS error : ", err);
                 messageApi.open({
                     key: '3',
@@ -220,17 +240,20 @@ export default function NewCampaign() {
 
     const handleReset = () => {
         form.resetFields();
+        setPublishing('wait');
+        setUploadingToIpfs('wait');
+        setUploadingToContract('wait')
+        setCompleted('wait');
     };
 
     const onChangeInput = (value) => {
-
 
         setAmt(value);
 
     };
 
     const onChangeImgUrl = (e) => {
-   
+
         setImgUrl(e.target.value);
     }
 
@@ -239,7 +262,7 @@ export default function NewCampaign() {
     }
 
     const normFile = (e) => {
- 
+
         if (Array.isArray(e)) {
             return e;
         }
@@ -262,7 +285,7 @@ export default function NewCampaign() {
         };
 
         const connectToIpfs = async () => {
-            const ipfsNode = IPFSHTTPClient({
+            const ipfsNode = create({
                 host: 'ipfs.infura.io',
                 port: 5001,
                 protocol: 'https',
@@ -280,13 +303,20 @@ export default function NewCampaign() {
         return () => clearInterval(intervalId);
     }, []);
 
+    useEffect(() => {
+        if (divRef.current) {
+          setHeight(divRef.current.clientHeight);
+        }
+      }, [divRef]);
 
-   
 
 
 
 
-    const router = useRouter();
+
+
+
+
     return (
 
         <ConfigProvider
@@ -295,17 +325,43 @@ export default function NewCampaign() {
             }}
         >
             {contextHolder}
-            
-            <div className='min-h-screen p-4 relative flex flex-col bg-black'>
 
-             
+            <div className='min-h-screen w-full  p-4 relative flex flex-col bg-black'>
 
-                <h1 className='mb-4 text-center mt-8 text-white font-bold font-mono text-2xl md:text-4xl' >Create a New Campaign <NotificationOutlined /></h1>
 
-                <div className="flex  gap-4 mb-12 flex-col w-full items-center justify-center ">
-                    <div className='flex  p-2 justify-start'>
-                        <Breadcrumb
-                       
+                <div className='flex mb-4 mt-4  justify-center'>
+                    <h1 className='text-center shadow-md transition hover:scale-[1.01] shadow-slate-400 text-gray-900  bg-white hover:bg-gray-100 ring-2 border-gray-200  dark:bg-gray-800 dark:border-gray-700 dark:text-white  rounded-xl backdrop-blur-xl px-4 py-2.5 font-bold font-mono text-2xl lg:text-3xl' >Create a New Campaign <NotificationOutlined /></h1>
+                </div>
+                <div className="flex  rounded-lg  gap-4  flex-col w-full items-center justify-center p-4 ">
+                    <div className='flex mt-4 lg:w-1/2 w-full md:w-full  p-2 justify-start '>
+                        <Steps
+                            current={1}
+                            items={[
+                                {
+                                    title: 'Publishing',
+                                    description,
+                                    status: publishing,
+                                },
+                                {
+                                    title: 'Ipfs',
+                                    description,
+                                    status: uploadingToIpfs,
+
+                                },
+                                {
+                                    title: 'Smart Contract',
+                                    description,
+                                    status: uploadingToContract,
+                                },
+                                {
+                                    title: 'Published',
+                                    description,
+                                    status: completed,
+                                }
+                            ]}
+                        />
+                        {/* <Breadcrumb
+                            className='text-lg'
                             separator="/"
                             items={[
                                 {
@@ -320,8 +376,10 @@ export default function NewCampaign() {
                                 },
 
                             ]}
-                        />
+                        /> */}
                     </div>
+
+                    <ConnectWallet />
 
                     <div className='relative  flex gap-2 justify-center max-w-2xl  overflow-hidden '>
                         {imgUrl &&
@@ -337,159 +395,171 @@ export default function NewCampaign() {
                         }
                     </div>
 
-                        <ConnectWallet/>
+                    <div  className='flex flex-col gap-4 lg:gap-2 lg:flex-row w-full h-full items-center justify-between'>
 
-                    <Form
-                        {...layout}
-                        form={form}
-                        labelWrap
+                        <div  className=" ring-2 table sm:max-w-2xl md:max-w-4xl lg:w-full p-4 rounded-lg" >
+                            <Form
+                                {...layout}
+                                form={form}
+                                labelWrap
 
-                        size='large'
-
-
-                        onFinish={onFinish}
-                        className="mt-4 md:mt-4 w-full max-w-md sm:max-w-2xl md:max-w-4xl lg:max-w-6xl p-8 ring-1  shadow-slate-800 shadow-lg rounded-lg"
-                    >
-                        <Form.Item
-                            name={'name'}
-                            label="Campaign Name"
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
+                                size='large'
 
 
-                        >
-                            <Input placeholder='Title...' />
-                        </Form.Item>
-                        <Form.Item
-                            name={'amount'}
-                            label="Target Amount"
-                            rules={[{ required: true }]}
+                                onFinish={onFinish}
+                                
+
+                            >
 
 
-                        >
-                            <Space>
-                                <InputNumber step="0.5" min={0} addonAfter="XTZ" onChange={onChangeInput} defaultValue={0} />
-                                <InputNumber
-                                    className='w-full'
-                                    prefix="$"
-                                    value={XTZPrice * amt}
-                                    controls={false}
-                                    readOnly
-                                    defaultValue={3}
-                                    formatter={value => `${Number(value).toFixed(3)}`}
+                                <div ref={divRef} className='w-full p-4 rounded-lg'>
 
-                                />
-                            </Space>
-
-                        </Form.Item>
-
-                        <Form.Item
-                            name="url"
-                            label="Image URL"
-                            rules={[{ required: true }, { type: 'url', warningOnly: true },]}
+                                    <Form.Item
+                                        name={'name'}
+                                        label="Campaign Name"
+                                        rules={[
+                                            {
+                                                required: true,
+                                            },
+                                        ]}
 
 
-                        >
-                            <Input value={imgUrl} onChange={onChangeImgUrl} allowClear />
-
-                        </Form.Item>
-                        <Form.Item
-                            name="upload"
-                            label="Upload"
-                            valuePropName="fileList"
-                            getValueFromEvent={normFile}
-
-                        >
-                            <Upload maxCount={1} name="cover" listType="picture" beforeUpload={() => false} onChange={handleUpload}>
-                                <Button className="flex items-center justify-center" icon={<UploadOutlined className="" />}>
-                                    Click to upload
-                                </Button>
-                            </Upload>
-
-                        </Form.Item>
-                        <Form.Item
-                            name={'description'}
-                            label="Campaign Description"
-                            rules={[{ required: true }]}
-
-                        >
-                            <Input.TextArea />
-                        </Form.Item>
-
-                        <Form.Item
-                            name="type"
-                            label="Campaign Type"
-                            rules={[{ required: true }]}
-
-                        >
-                            <Select
-                                showSearch
-                                style={{ width: 200 }}
-                                placeholder="Search to Select"
-                                optionFilterProp="children"
-                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                                filterSort={(optionA, optionB) =>
-                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
-                                options={[
-                                    {
-                                        value: 'Other',
-                                        label: 'Other',
-                                    },
-                                    {
-                                        value: 'Crowdfunding',
-                                        label: 'Crowdfunding',
-                                    },
-                                    {
-                                        value: 'Charity',
-                                        label: 'Charity',
-                                    },
-                                    {
-                                        value: 'Investment',
-                                        label: 'Investment',
-                                    },
-                                    {
-                                        value: 'Donation',
-                                        label: 'Donation',
-                                    },
-                                    {
-                                        value: 'Lending',
-                                        label: 'Lending',
-                                    },
-                                ]}
-                            />
-                        </Form.Item>
+                                    >
+                                        <Input placeholder='Title...' />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name={'amount'}
+                                        label="Target Amount"
+                                        rules={[{ required: true }]}
 
 
-                        <div data-color-mode="dark" className='my-8'>
+                                    >
+                                        <Space>
+                                            <InputNumber step="0.5" min={0} addonAfter="XTZ" onChange={onChangeInput} defaultValue={0} />
+                                            <InputNumber
+                                                
+                                                className='w-full'
+                                                prefix="$"
+                                                value={XTZPrice * amt}
+                                                controls={false}
+                                                readOnly
+                                                defaultValue={3}
+                                                formatter={value => `${Number(value).toFixed(3)}`}
+
+                                            />
+                                        </Space>
+
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="url"
+                                        label="Image URL"
+                                        rules={[{ required: true }, { type: 'url', warningOnly: true },]}
+
+
+                                    >
+                                        <Input value={imgUrl} onChange={onChangeImgUrl} allowClear />
+
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="upload"
+                                        label="Upload"
+                                        valuePropName="fileList"
+                                        getValueFromEvent={normFile}
+
+                                    >
+                                        <Upload maxCount={1} name="cover" listType="picture" beforeUpload={() => false} onChange={handleUpload}>
+                                            <Button className="flex items-center justify-center" icon={<UploadOutlined className="" />}>
+                                                Click to upload
+                                            </Button>
+                                        </Upload>
+
+                                    </Form.Item>
+                                    <Form.Item
+                                        name={'description'}
+                                        label="Campaign Description"
+                                        rules={[{ required: true }]}
+
+                                    >
+                                        <Input.TextArea />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="type"
+                                        label="Campaign Type"
+                                        rules={[{ required: true }]}
+
+                                    >
+                                        <Select
+                                            showSearch
+                                            style={{ width: 200 }}
+                                            placeholder="Search to Select"
+                                            optionFilterProp="children"
+                                            filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                            filterSort={(optionA, optionB) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={[
+                                                {
+                                                    value: 'Other',
+                                                    label: 'Other',
+                                                },
+                                                {
+                                                    value: 'Crowdfunding',
+                                                    label: 'Crowdfunding',
+                                                },
+                                                {
+                                                    value: 'Charity',
+                                                    label: 'Charity',
+                                                },
+                                                {
+                                                    value: 'Investment',
+                                                    label: 'Investment',
+                                                },
+                                                {
+                                                    value: 'Donation',
+                                                    label: 'Donation',
+                                                },
+                                                {
+                                                    value: 'Lending',
+                                                    label: 'Lending',
+                                                },
+                                            ]}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        className='flex rounded-lg justify-center'
+
+                                    >
+                                        <Space size={'large'}>
+                                            <Button loading={loading} className=" bg-blue-600 " type="primary" htmlType="submit">
+                                                Publish
+                                            </Button>
+                                            <Button onClick={handleReset} className="" >
+                                                Reset
+                                            </Button>
+                                        </Space>
+
+
+
+                                    </Form.Item>
+                                </div>
+
+                            </Form>
+                        </div>
+
+                        <div  data-color-mode="dark" className='w-full self-stretch ring-2 p-4 rounded-lg'>
                             <MDEditor
-                               
+
+                                height={height-8}
                                 value={value}
                                 onChange={setValue}
 
                             />
+
                         </div>
 
-
-                        <Form.Item
-                            className='flex justify-center'
-
-                        >
-                            <Space>
-                                <Button loading={loading} className=" bg-blue-600 " type="primary" htmlType="submit">
-                                    Publish
-                                </Button>
-                                <Button onClick={handleReset} className=" " >
-                                    Reset
-                                </Button>
-                            </Space>
-                        </Form.Item>
-
-
-                    </Form>
+                    </div>
 
 
 
@@ -498,6 +568,8 @@ export default function NewCampaign() {
 
                 </div>
             </div>
+
+
         </ConfigProvider>
     )
 }

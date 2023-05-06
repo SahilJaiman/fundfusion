@@ -7,9 +7,9 @@ import ConnectWallet from './ConnectWallet';
 
 
 const navigation = [
-  { name: 'Home', href: '#', current: true },
+  { name: 'Home', href: '/', current: true },
   { name: 'About', href: '#', current: false },
-  { name: 'Campaigns', href: '#', current: false },
+  { name: 'Campaigns', href: '/campaign/all', current: false },
   { name: 'Create', href: '/campaign/new', current: false },
 ]
 
@@ -20,7 +20,7 @@ function classNames(...classes) {
 export default function Navbar() {
 
   return (
-    <Disclosure as="nav" className="z-50 sticky top-0 bg-gradient-to-r from-gray-700 via-gray-900 to-black">
+    <Disclosure as="nav" className="z-50 sticky  top-0 bg-gradient-to-r from-gray-700 via-gray-900 to-black">
       {({ open }) => (
         <>
           <div className="mx-auto  px-2 sm:px-6 lg:px-8">
@@ -78,8 +78,8 @@ export default function Navbar() {
             </div>
           </div>
 
-          <Disclosure.Panel className="sm:hidden">
-            <div className="space-y-1 px-2 pb-3 pt-2">
+          <Disclosure.Panel className="sm:hidden p-2">
+            <div className="space-y-1 px-2 pb-3 pt-2 ring-2 rounded-md backdrop-blur-lg">
               {navigation.map((item) => (
                 <Disclosure.Button
                   key={item.name}
@@ -87,7 +87,7 @@ export default function Navbar() {
                   href={item.href}
                   className={classNames(
                     item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                    'block rounded-md px-3 py-2 text-base font-medium'
+                    'block rounded-md px-3 py-2 text-base font-medium '
                   )}
                   aria-current={item.current ? 'page' : undefined}
                 >
