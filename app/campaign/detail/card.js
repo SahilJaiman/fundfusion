@@ -1,50 +1,75 @@
-import React from "react";
+import React, { useState } from "react";
+import { InfoCircleFilled } from "@ant-design/icons";
+import { Tooltip, Progress, ConfigProvider, theme } from "antd";
 
 export default function Card(props) {
+    console.log("this->", props.contributors);
+    const contributorsList = props.contributors? Object.entries(props.contributors):[];
     return (
+        <ConfigProvider
+            theme={{
+                algorithm: theme.darkAlgorithm,
+            }}
+        >
 
-        <div className='max-w-sm py-2 px-4  h-96 w-96  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 '>
-            <h1 className='flex flex-row justify-between p-4'> <span className='text-2xl font-bold font-sans text-white'>Amount Raised</span> <span className='text-2xl font-bold font-sans text-white'>{props.fundRaised/1000000} </span></h1>
-            <h1 className='flex flex-row justify-between p-4 '> <span className='text-2xl font-bold font-sans text-white'>Amount left</span> <span className='text-2xl font-bold font-sans text-white'>{props.totalFund/1000000} </span></h1>
+            <div className='w-full max-w-sm sm:max-w-2xl py-2 px-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 '>
+                <div className='flex flex-col  p-2'>
+                    <span className='text-xl  font-bold font-mono text-white'>
+                        Campaign Balance
+                        <Tooltip title="The balance is how much money this campaign has left to spend.">
+                            <InfoCircleFilled className="ml-2 w-4 h-4" />
+                        </Tooltip>
+                    </span>
 
-            <button type="button" class="text-gray-900 flex-row justify-center bg-gray-400 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-7 mt-0.5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-500 mr-2 mb-2 w-full">
-                <svg class="w-4 h-4 mr-2 -ml-1 text-[#626890]" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="ethereum" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"></path></svg>
-                Contribute Now
-            </button>
-            <br />
-            <div class="flex items-center justify-between p-2">
-                <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">Latest Customers</h5>
-                <a href="#" class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
-                    View all
-                </a>
+
+                    <div className="flex flex-col items-start justify-center ">
+                        <div className="font-mono flex space-x-2 text-white text-2xl font-extrabold text-center"><span>{Math.round(props.fundRaised / 1000000)}</span> <img className="w-4" src='/tezos.svg' /></div>
+                        <div className="text-gray-500 dark:text-gray-400 font-mono">Raised of {Math.round(props.totalFund / 1000000)}</div>
+                    </div>
+                    <Progress percent={Math.round((props.fundRaised) * 100 / props.totalFund)} status="active" />
+
+                </div>
+
+
+                <button type="button" className="text-gray-900 text-lg font-bold flex-row justify-center bg-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-100 rounded-lg  px-7 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-500  w-full">
+
+                    Contribute Now
+                </button>
+                <br />
+                <div className="flex items-center justify-between mt-2 p-2">
+                    <h5 className="text-xl font-mono font-bold leading-none text-gray-900 dark:text-white">Recent Contributors</h5>
+                   
+                </div>
+
+                <div className=" space-y-2 p-2 ">
+                    {
+
+                        contributorsList?.map(([key, value]) => (
+
+                            <ul key={key} role="list" className="">
+                                <li className="items-center">
+                                    <div className="flex items-center space-x-2">
+                                        <div className="flex-shrink-0">
+                                            <img className="w-8 h-8 rounded-full " src="/7309681.jpg" alt="Neil image" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                                {key.slice(0,10)+" ... "+key.slice(-4)}
+                                            </p>
+                                        </div>
+                                        <div className="inline-flex items-center  text-base font-semibold text-gray-900 dark:text-white">
+                                            {Math.round(value/1000000)} <img className='w-4 h-4 ml-2' src='/tezos.svg' />
+                                        </div>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        ))
+                    }
+                </div>
+
             </div>
-
-            <div class="flow-root ">
-                <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
-                    <li class="py-2 sm:py-4 items-center">
-                        <div class="flex items-center space-x-2">
-                            <div class="flex-shrink-0">
-                                <img class="w-8 h-8 rounded-full " src="/7309681.jpg" alt="Neil image" />
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                    Neil Sims
-                                </p>
-                                <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                    email@windster.com
-                                </p>
-                            </div>
-                            <div class="inline-flex items-center  text-base font-semibold text-gray-900 dark:text-white">
-                                $320
-                            </div>
-                        </div>
-                    </li>
-
-
-                </ul>
-            </div>
-
-        </div>
+        </ConfigProvider>
 
 
     )

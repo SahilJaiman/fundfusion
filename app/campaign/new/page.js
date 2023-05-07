@@ -326,11 +326,11 @@ export default function NewCampaign() {
         >
             {contextHolder}
 
-            <div className='min-h-screen w-full  p-4 relative flex flex-col bg-black'>
+            <div className='flex-1 w-full  p-4 relative flex flex-col bg-black'>
 
 
                 <div className='flex mb-4 mt-4  justify-center'>
-                    <h1 className='text-center shadow-md transition hover:scale-[1.01] shadow-slate-400 text-gray-900  bg-white hover:bg-gray-100 ring-2 border-gray-200  dark:bg-gray-800 dark:border-gray-700 dark:text-white  rounded-xl backdrop-blur-xl px-4 py-2.5 font-bold font-mono text-2xl lg:text-3xl' >Create a New Campaign <NotificationOutlined /></h1>
+                    <h1 className='text-center shadow-md transition hover:scale-[1.01] shadow-slate-400 text-gray-900  bg-white hover:bg-gray-100 ring-2 border-gray-200  dark:bg-gray-800 dark:border-gray-700 dark:text-white  rounded-xl backdrop-blur-xl px-4 py-2.5 font-bold font-mono text-2xl lg:text-3xl' >Create a New Campaign </h1>
                 </div>
                 <div className="flex  rounded-lg  gap-4  flex-col w-full items-center justify-center p-4 ">
                     <div className='flex mt-4 lg:w-1/2 w-full md:w-full  p-2 justify-start '>
@@ -379,7 +379,7 @@ export default function NewCampaign() {
                         /> */}
                     </div>
 
-                    <ConnectWallet />
+               
 
                     <div className='relative  flex gap-2 justify-center max-w-2xl  overflow-hidden '>
                         {imgUrl &&

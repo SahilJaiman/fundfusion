@@ -54,8 +54,8 @@ export default function Reportpage() {
 
     return (
         <>
-            <Navbar/>
-            <div className='min-h-screen p-4 flex flex-col  items-center justify-center  bg-gradient-to-r from-gray-700 via-gray-900 to-black'>
+           
+            <div className='flex-1 w-full p-4 flex flex-col  items-center justify-center  bg-gradient-to-r bg-black'>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
 

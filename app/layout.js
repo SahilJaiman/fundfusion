@@ -1,3 +1,4 @@
+import Navbar from '@/components/Navbar'
 import './globals.css'
 export const metadata = {
   title: 'fundfusion',
@@ -7,12 +8,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html className="dark" lang="en">
-      <body className="mt-0">
-        
- 
-          {children}
-  
-         
+      <body className="min-h-screen flex flex-col">
+
+        <Navbar/>
+        {children}
+
+
       </body>
     </html>
   )

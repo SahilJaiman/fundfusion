@@ -73,39 +73,36 @@ export default function Postpage() {
 
 
     return (
-        <div className='min-h-screen p-4  lg:flex flex-col  items-center justify-start bg-gradient-to-r from-gray-700 via-gray-900 to-black'>
+        <div className='flex-1 p-2 sm:p-4 flex flex-col  items-center justify-start bg-black'>
 
-            <h1 class="mb-4 w-full font-extrabold sm:text-center text-xl bg-clip-text text-transparent bg-gradient-to-b from-sky-400 to-sky-200 sm:p-2 md:py-4
-  md:text-4xl lg:text-4xl xl:text-4xl
-">{campaign.title}</h1>
+            <div class="px-2 py-4 font-bold text-center font-serif text-xl shadow-md shadow-slate-300 rounded-lg text-white bg-slate-800 md:text-4xl lg:text-4xl xl:text-4xl ring-2 ">{campaign.title}</div>
 
-            <div className=' rounded-xl gap-16 p-6  w-full  sm:flex sm:flex-col  md:flex md:flex-row  '>
+            <div className='  gap-8 p-2 sm:p-4 w-full flex flex-col justify-start md:flex-row mt-8  '>
                 {/* LEFT SIDE */}
-                <div className='w-full  flex flex-col justify-start items-center' >
+                <div className='w-full border-2 border-slate-600 rounded-lg bg-slate-800 md:w-2/3 flex flex-col justify-start items-center p-4' >
                     {/*  IMAGE  */}
-                    <div className='ring-4 h-[300px] w-[600px] overflow-hidden relative rounded-xl group '>
+                    <div className='w-full ring-2  rounded-lg h-64 overflow-hidden relative  group '>
                         <img className='absolute w-full h-full transition-transform duration-300 transform group-hover:scale-110  object-cover '
                             src={campaign.thumbnail_url}
+                            alt="Campaign Thumbnail"
                         />
 
                     </div>
                     {/* CONTENT */}
-                    <div className='overflow-auto w-3/4 ring-4 mt-4 rounded-xl'>
-
-
+                    <div className='overflow-auto mt-4 rounded-xl'>
                         <CampaignOutput content={content} />
-
-
                     </div>
                 </div>
                 {/* RIGHT SIDE*/}
-                <div className='md:flex md:flex-col md:justify-start sm:items-center sm:justify-center sm:mt-4 '>
-                    <div className='md:sticky flex flex-col md:gap-6 top-16 '>
+                <div className='w-full md:flex-1 p-2 flex md:flex-col md:justify-start items-center justify-center '>
+                    <div className='md:sticky w-full flex flex-col justify-center items-center gap-6 top-20 '>
+                        <Vote />
                         <Card
+                            contributors = {campaign.contributors}
                             fundRaised={campaign.fundraised}
                             totalFund={campaign.fundraising_goal}
                         />
-                        <Vote />
+
                     </div>
                 </div>
 
