@@ -8,7 +8,7 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,json}",
     "./pages/**/*.{js,ts,jsx,tsx,json}",
     "./components/**/*.{js,ts,jsx,tsx,json}",
- 
+
     // Or if using `src` directory:
     "./src/**/*.{js,ts,jsx,tsx.json}",
   ],

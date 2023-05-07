@@ -6,59 +6,59 @@ export default function CampaignCard({ campaign }) {
     const onHandleClick = (id) => {
         router.push(`campaign/detail?id=${id}`)
     }
+    const calculateBarPercentage = (goal, raisedAmount) => {
+        const percentage = Math.round((raisedAmount * 100) / goal);
+        console.log("%", percentage);
+        return percentage;
+    };
+
 
     return (
 
-        <div onClick={() => onHandleClick(campaign.value.id)} class="max-w-sm p-6 h-full hover:scale-[1.01] transition-all duration-300 cursor-pointer bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-blue-700">
+        <div class="max-w-sm gap-4 p-4 flex flex-col h-full hover:scale-[1.01] transition-all duration-300 cursor-pointer bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-blue-700">
             <div className='flex flex-col  items-center'>
                 {/* Cover Image */}
-                <div className='h-40 w-80  overflow-hidden relative rounded-xl group'>
+                <div onClick={() => onHandleClick(campaign.value.id)} className='h-40 w-full  overflow-hidden relative rounded-xl group'>
                     <img className="absolute w-full h-full transition-transform ring-4  duration-300 transform group-hover:scale-110  object-cover" src={campaign.value.thumbnail_url} alt="" />
                 </div>
             </div>
-            <div class="p-2 ">
+            <div class="flex h-full flex-col justify-between p-2 ">
                 {/* Title */}
-                <a href="#">
-                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{campaign.value.title}</h5>
-                </a>
-                {/* Content */}
-                <p class="mb-4 font-normal max-h-24 text-gray-700 dark:text-gray-400 overflow-hidden">{campaign.value.desc}</p>
-
-                {/* remaining amount */}
-                <div className='flex  flex-col justify-center items-center w-full h-full '>
-                    {/* Donated amount */}
-                    <div href="#" className="w-full h-full mb-3  bg-green-800 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 text-white rounded-lg inline-flex items-center justify-between px-4 py-2.5 dark:bg-green-700 dark:hover:bg-green-600 dark:focus:ring-gray-700">
-
-
-
-                        <div className="text-left ml-2 gap-4 flex flex-row items-center justify-between">
-                            <img class=" w-7 h-7" src='/gift.png' alt='/'></img>
-                            <div class=" text-m">Donated Amount</div>
-
-                        </div>
-                        <div class=" font-sans text-m font-semibold text-right">{campaign.value.fundraised}</div>
-                    </div>
-                    {/* Needed amount */}
-                    <div href="#" class="w-full h-full mb-3  bg-red-800 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 text-white rounded-lg inline-flex items-center justify-between px-4 py-2.5 dark:bg-red-700 dark:hover:bg-red-600 dark:focus:ring-gray-700">
-
-                        <div class="text-left ml-2 gap-4 flex flex-row justify-between ">
-                            <img class=" w-7 h-7" src='/hand.png' alt='/'></img>
-                            <span class=" text-m">Amount Needed</span>
-
-                        </div>
-                        <div class=" font-sans text-m font-semibold text-right">
-                            <span>
-                                {campaign.value.fundraising_goal / 1000000}
-                                <img className='inline w-4 h-4 ml-1' src='/tezos.svg' />
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                {/* Contribute Button */}
-                <div className='flex flex-row justify-center md:justify-end'>
-                    <a href="#" class="inline-flex items-center justify-center text-center mt-2 px-2 py-2 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
-                        I want to Contribute  ❤️
+                <div className='space-y-2'>
+                    <a href="">
+                        <h5 class=" text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{campaign.value.title}</h5>
                     </a>
+                    {/* Content */}
+                    <p class="font-normal max-h-24 text-gray-700 dark:text-gray-400 overflow-hidden">{campaign.value.desc}</p>
+                </div>
+                {/* remaining amount */}
+                <div className='mt-2'>
+                    <div class="flex flex-col items-start justify-center ">
+                        <div class="font-mono flex space-x-2 text-white text-2xl font-extrabold text-center"><span>{Math.round(campaign.value.fundraised / 1000000)}</span> <img src='/tezos.svg' className='w-[30px] h-[30px] ' /></div>
+                        <div class="text-gray-500 dark:text-gray-400 font-mono">Raised of {campaign.value.fundraising_goal / 1000000}</div>
+
+                    </div>
+                    <div className="relative w-full h-[5px] bg-[#3a3a43] mt-2">
+                        <div className="absolute h-full  bg-blue-500" style={{ width: `${calculateBarPercentage(campaign.value.fundraising_goal, campaign.value.fundraised)}%`, maxWidth: '100%' }}>
+                        </div>
+                    </div>
+                    {/* Creator details */}
+                    <div className=" flex mt-2 justify-center items-center ">
+                        <p className="flex-1 font-sans font-bold text-md text-[#808191] truncate">
+                            by <span className="font-normal hover:text-blue-600 text-[#b2b3bd] text-xs">
+                                <a target="_blank" rel="noopener noreferrer" style={{ display: "table-cell" }} href={`https://ghostnet.tzkt.io/${campaign.value.author}/operations/`}>{campaign.value.author}</a>
+                            </span>
+                        </p>
+                    </div>
+                    {/* Contribute Button */}
+                    <div className='flex flex-row justify-center md:justify-end  '>
+                        <a onClick={() => onHandleClick(campaign.value.id)} class="inline-flex group  items-center justify-center text-center mt-2 px-2 py-2 font-medium rounded-full text-sm p-2 dark:border-blue-500 dark:text-white dark:hover:text-blue-600 ">
+                            I want to Contribute  <span className='group-hover:animate-spin group-hover:ml-1 group-hover:scale-[1.4] inline-flex duration-300 ease-in-out'>❤️</span>
+                        </a>
+                    </div>
+
+
+
                 </div>
             </div>
 
