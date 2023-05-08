@@ -319,11 +319,7 @@ export default function NewCampaign() {
 
     return (
 
-        <ConfigProvider
-            theme={{
-                algorithm: theme.darkAlgorithm,
-            }}
-        >
+        <>
             {contextHolder}
 
             <div className='flex-1 w-full  p-4 relative flex flex-col bg-black'>
@@ -570,6 +566,6 @@ export default function NewCampaign() {
             </div>
 
 
-        </ConfigProvider>
+        </>
     )
 }

@@ -88,11 +88,7 @@ export default function Card(props) {
 
     const contributorsList = props.contributors ? Object.entries(props.contributors) : [];
     return (
-        <ConfigProvider
-            theme={{
-                algorithm: theme.darkAlgorithm,
-            }}
-        >
+        <>
             {contextHolder}
 
             <div className='w-full max-w-sm sm:max-w-2xl py-2 px-4  bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 '>
@@ -208,7 +204,7 @@ export default function Card(props) {
 
 
             </Modal >
-        </ConfigProvider >
+        </>
 
 
     )

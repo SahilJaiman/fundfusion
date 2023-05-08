@@ -4,7 +4,8 @@ import CampaignCard from './CampaignCard';
 import { fetchStorage } from '@/utils/tzkt';
 import axios from "axios";
 import { create } from "ipfs-http-client";
-import Navbar from '@/components/Navbar';
+
+import { Select } from 'antd';
 
 var Buffer = require('buffer/').Buffer
 const infuraApiKey = '2Ow0S5v4gpn9zS7dlv448fKFYG0'
@@ -14,6 +15,14 @@ const auth = 'Basic ' + Buffer.from(infuraApiKey + ':' + infuraApiSecret).toStri
 export default function Reportpage() {
     const [campaigns, setCampaigns] = useState([]);
     const [ipfs, setIpfs] = useState(null);
+
+    const onChange = (value) => {
+        console.log(`selected ${value}`);
+    };
+    const onSearch = (value) => {
+        console.log('search:', value);
+    };
+
     async function fetchIpfsData(url) {
         try {
             const response = await fetch(url);
@@ -54,8 +63,37 @@ export default function Reportpage() {
 
     return (
         <>
-           
+
             <div className='flex-1 w-full p-4 flex flex-col  items-center justify-center  bg-gradient-to-r bg-black'>
+                <div className='flex justify-center items-center w-full p-2 '>
+                    <Select
+                        className='max-w-sm'
+                        size='large'
+                        showSearch
+                        placeholder="Select a person"
+                        optionFilterProp="children"
+                        onChange={onChange}
+                        onSearch={onSearch}
+                        filterOption={(input, option) =>
+                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                        }
+                        options={[
+                            {
+                                value: 'jack',
+                                label: 'Jack',
+                            },
+                            {
+                                value: 'lucy',
+                                label: 'Lucy',
+                            },
+                            {
+                                value: 'tom',
+                                label: 'Tom',
+                            },
+                        ]}
+                    />
+                </div>
+
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
 
