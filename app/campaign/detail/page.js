@@ -98,6 +98,7 @@ export default function Postpage() {
                     <div className='md:sticky w-full flex flex-col justify-center items-center gap-6 top-20 '>
                         <Vote />
                         <Card
+                            id={campaign.id}
                             contributors = {campaign.contributors}
                             fundRaised={campaign.fundraised}
                             totalFund={campaign.fundraising_goal}
