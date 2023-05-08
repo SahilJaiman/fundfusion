@@ -6,6 +6,7 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { fetchPrice } from "@/app/api/tezos";
 import { sendTipOperation } from "@/utils/operation";
+import "./style.css"
 
 export default function Card(props) {
 
@@ -98,7 +99,7 @@ export default function Card(props) {
                 <div className='flex flex-col  p-2'>
                     <span className='text-xl  font-bold font-mono text-white'>
                         Campaign Balance
-                        <Tooltip title="The balance is how much money this campaign has left to spend.">
+                        <Tooltip title="The balance is how much money this campaign has raised.">
                             <InfoCircleFilled className="ml-2 w-4 h-4" />
                         </Tooltip>
                     </span>
@@ -106,9 +107,12 @@ export default function Card(props) {
 
                     <div className="flex flex-col items-start justify-center ">
                         <div className="font-mono flex space-x-2 text-white text-2xl font-extrabold text-center"><span>{Math.round(props.fundRaised / 1000000)}</span> <img className="w-4" src='/tezos.svg' /></div>
-                        <div className="text-gray-500 dark:text-gray-400 font-mono">Raised of {Math.round(props.totalFund / 1000000)}</div>
+                        <div className="text-gray-500 dark:text-gray-400 font-mono ">Raised of {Math.round(props.totalFund / 1000000)}</div>
                     </div>
+
                     <Progress percent={Math.round((props.fundRaised) * 100 / props.totalFund)} status="active" />
+
+           
 
                 </div>
 
@@ -123,7 +127,7 @@ export default function Card(props) {
 
                 </div>
 
-                <div className=" space-y-2 p-2 ">
+                <div className=" max-h-40 overflow-auto space-y-2 p-2 ">
                     {
 
                         contributorsList?.reverse().map(([key, value]) => (
@@ -160,7 +164,7 @@ export default function Card(props) {
                 onCancel={handleCancel}
                 okText="Send"
                 confirmLoading={isLoading}
-                onOk={()=>onSend(inputValue)}
+                onOk={() => onSend(inputValue)}
 
             >
 

@@ -25,9 +25,9 @@ export default function CampaignCard({ campaign }) {
             <div class="flex h-full flex-col justify-between p-2 ">
                 {/* Title */}
                 <div className='space-y-2'>
-                    <a href="">
+                    <div >
                         <h5 class=" text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{campaign.value.title}</h5>
-                    </a>
+                    </div>
                     {/* Content */}
                     <p class="font-normal max-h-24 text-gray-700 dark:text-gray-400 overflow-hidden">{campaign.value.desc}</p>
                 </div>
