@@ -79,7 +79,7 @@ export default function CampaignPage() {
                         <Vote />
                         {/* Author */}
 
-                        <AuthorCard author={campaign.author} />
+                        <AuthorCard id={campaign.id} fundRaised={campaign.fundraised} total_withdraw_amt={campaign.total_withdraw_amt} author={campaign.author} />
                         <Card
                             id={campaign.id}
                             author={campaign.author}

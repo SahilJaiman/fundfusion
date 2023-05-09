@@ -37,6 +37,20 @@ export const contributeOperation = async (id, amt) => {
     }
 };
 
+export const withdrawOperation = async (id, amt) => {
+    try {
+        const contractInstance = await tezos.wallet.at(contractAddress);
+        const op = await contractInstance.methods.withdraw(
+            amt*1000000,
+            id,
+
+        ).send();
+        await op.confirmation(1);
+    } catch (err) {
+        throw err;
+    }
+};
+
 
 
 

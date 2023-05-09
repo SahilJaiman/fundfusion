@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from "react";
 import { InfoCircleFilled } from "@ant-design/icons";
-import { Tooltip, Progress, ConfigProvider, theme, Modal, InputNumber, Row, Col, Statistic, message } from "antd";
+import { Tooltip, Progress, Modal, InputNumber, Col, Statistic, message } from "antd";
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { fetchPrice } from "@/app/api/tezos";
