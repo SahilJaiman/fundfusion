@@ -8,6 +8,7 @@ import Vote from './vote';
 import { fetchStorage } from '@/utils/tzkt';
 import axios from "axios";
 import { Tooltip, Button } from 'antd';
+import AuthorCard from './authorCard';
 
 
 
@@ -54,7 +55,7 @@ export default function CampaignPage() {
     return (
         <div className='flex-1 p-2 sm:p-4 flex flex-col  items-center justify-start bg-black'>
 
-            <div className="px-4 w-full max-w-sm md:max-w-lg py-4 mt-4 font-bold text-center font-serif text-xl shadow-xs shadow-slate-300 rounded-lg text-blue-600 md:text-3xl ring-2 ">{campaign.title}</div>
+            <div className="px-4 w-full max-w-sm md:max-w-lg py-4 mt-4 font-bold text-center font-serif text-xl shadow-xs shadow-slate-300 rounded-lg text-white md:text-3xl ring-2 ">{campaign.title}</div>
 
             <div className='  gap-8 p-2 sm:p-4 w-full flex flex-col justify-start lg:flex-row lg:justify-center mt-4  '>
                 {/* LEFT SIDE */}
@@ -77,21 +78,8 @@ export default function CampaignPage() {
                     <div className='md:sticky w-full flex flex-col justify-center items-center gap-6 top-20 '>
                         <Vote />
                         {/* Author */}
-                        <div className="flex flex-col mt-2 gap-4 w-full p-4 sm:p-6 max-w-sm sm:max-w-2xl bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 ">
-                            <p className="flex-1 flex space-x-2 text-xl justify-between  font-bold font-mono text-white">
-                                <span>Author</span>
-                                <Tooltip title="View all transactions related to author, including contribution received.">
-                                    <span className="font-normal text-gray-400 font-mono hover:text-blue-600 ">
-                                        <a target="_blank" rel="noopener noreferrer" style={{ display: "table-cell" }} href={`https://ghostnet.tzkt.io/${campaign.author}/operations/`}>{campaign.author?.slice(0, 5) + " ... " + campaign.author?.slice(-5)}</a>
-                                    </span>
-                                </Tooltip>
-                            </p>
-                            <div className='w-full'>
-                                <Button size='large' className='bg-blue-600' block type="primary">Withdraw</Button>
-                            </div>
 
-                        </div>
-
+                        <AuthorCard author={campaign.author} />
                         <Card
                             id={campaign.id}
                             author={campaign.author}
