@@ -116,7 +116,7 @@ export default function Reportpage() {
 
                     < div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
 
-                        {filteredCampaigns?.map((campaign) => {
+                        {filteredCampaigns?.sort((a,b)=>new Date(a.value.deadline).getTime()-new Date(b.value.deadline).getTime()).map((campaign) => {
                             return (
                                 <CampaignCard
                                     key={campaign.value.id}
