@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect,useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
     Button,
     Form,
@@ -12,6 +12,7 @@ import {
     message,
     Breadcrumb,
     Steps,
+    DatePicker
 } from 'antd';
 import { ConfigProvider, theme } from 'antd';
 import { NotificationOutlined, CloseOutlined, UploadOutlined } from '@ant-design/icons';
@@ -70,6 +71,7 @@ export default function NewCampaign() {
     const [ipfs, setIpfs] = useState(null);
     const [ipfsContent, setIpfsContent] = useState(null);
     const [value, setValue] = useState();
+    const [deadline, setDeadline] = useState(null);
 
     const [publishing, setPublishing] = useState('wait');
     const [uploadingToIpfs, setUploadingToIpfs] = useState('wait');
@@ -108,6 +110,7 @@ export default function NewCampaign() {
                         values.description,
                         values.type,
                         values.amount,
+                        deadline,
                     )
 
                 } else {
@@ -119,6 +122,7 @@ export default function NewCampaign() {
                         values.description,
                         values.type,
                         values.amount,
+                        deadline
                     )
 
                 }
@@ -235,7 +239,19 @@ export default function NewCampaign() {
 
     };
 
+    const onChangeDate = (date, dateString) => {
+        const [year, month, day] = dateString.split('-').map(Number);
+        const timestamp = Math.floor(new Date(year, month - 1, day) / 1000);
+        setDeadline(timestamp);
+        
+    };
 
+    function disabledDate(current) {
+
+        const today = new Date();
+
+        return current && current.valueOf() < new Date(today.getFullYear(), today.getMonth(), today.getDate()).valueOf();
+    }
 
 
     const handleReset = () => {
@@ -305,9 +321,9 @@ export default function NewCampaign() {
 
     useEffect(() => {
         if (divRef.current) {
-          setHeight(divRef.current.clientHeight);
+            setHeight(divRef.current.clientHeight);
         }
-      }, [divRef]);
+    }, [divRef]);
 
 
 
@@ -375,7 +391,7 @@ export default function NewCampaign() {
                         /> */}
                     </div>
 
-               
+
 
                     <div className='relative  flex gap-2 justify-center max-w-2xl  overflow-hidden '>
                         {imgUrl &&
@@ -391,9 +407,9 @@ export default function NewCampaign() {
                         }
                     </div>
 
-                    <div  className='flex flex-col gap-4 lg:gap-2 lg:flex-row w-full h-full items-center justify-between'>
+                    <div className='flex flex-col gap-4 lg:gap-2 lg:flex-row w-full h-full items-center justify-between'>
 
-                        <div  className=" ring-2 table sm:max-w-2xl md:max-w-4xl lg:w-full p-4 rounded-lg" >
+                        <div className=" ring-2 table sm:max-w-2xl md:max-w-4xl lg:w-full p-4 rounded-lg" >
                             <Form
                                 {...layout}
                                 form={form}
@@ -403,7 +419,7 @@ export default function NewCampaign() {
 
 
                                 onFinish={onFinish}
-                                
+
 
                             >
 
@@ -433,7 +449,7 @@ export default function NewCampaign() {
                                         <Space>
                                             <InputNumber step="0.5" min={0} addonAfter="XTZ" onChange={onChangeInput} defaultValue={0} />
                                             <InputNumber
-                                                
+
                                                 className='w-full'
                                                 prefix="$"
                                                 value={XTZPrice * amt}
@@ -523,6 +539,17 @@ export default function NewCampaign() {
                                             ]}
                                         />
                                     </Form.Item>
+
+
+                                    <Form.Item
+                                        name={'deadline'}
+                                        label="Deadline"
+                                        rules={[{ required: true }]}
+
+                                    >
+                                        <DatePicker disabledDate={disabledDate} onChange={onChangeDate} />
+                                    </Form.Item>
+
                                     <Form.Item
                                         className='flex rounded-lg justify-center'
 
@@ -539,15 +566,18 @@ export default function NewCampaign() {
 
 
                                     </Form.Item>
+
+
+
                                 </div>
 
                             </Form>
                         </div>
 
-                        <div  data-color-mode="dark" className='w-full self-stretch ring-2 p-4 rounded-lg'>
+                        <div data-color-mode="dark" className='w-full self-stretch ring-2 p-4 rounded-lg'>
                             <MDEditor
 
-                                height={height-8}
+                                height={height - 8}
                                 value={value}
                                 onChange={setValue}
 

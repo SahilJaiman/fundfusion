@@ -5,7 +5,7 @@ import { Tooltip, Progress, ConfigProvider, theme, Modal, InputNumber, Row, Col,
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { fetchPrice } from "@/app/api/tezos";
-import { sendTipOperation } from "@/utils/operation";
+import { contributeOperation } from "@/utils/operation";
 import "./style.css"
 
 export default function Card(props) {
@@ -28,7 +28,7 @@ export default function Card(props) {
         fetchData();
     }, []);
 
-    const onSend = async (amt) => {
+    const onContribute = async (amt) => {
 
         try {
 
@@ -41,7 +41,7 @@ export default function Card(props) {
                 duration: 0
             });
 
-            await sendTipOperation(props.id, amt);
+            await contributeOperation(props.id, amt);
 
             messageApi.open({
                 key: '1',
@@ -87,6 +87,7 @@ export default function Card(props) {
     };
 
     const contributorsList = props.contributors ? Object.entries(props.contributors) : [];
+    console.log(contributorsList)
     return (
         <>
             {contextHolder}
@@ -126,7 +127,7 @@ export default function Card(props) {
                 <div className=" max-h-40 overflow-auto space-y-2 p-2 ">
                     {
 
-                        contributorsList?.reverse().map(([key, value]) => (
+                        contributorsList?.sort((a, b) => b[1].timestamp - a[1].timestamp).map(([key, value]) => (
 
                             <ul key={key} role="list" className="">
                                 <li className="items-center">
@@ -140,7 +141,7 @@ export default function Card(props) {
                                             </p>
                                         </div>
                                         <div className="inline-flex items-center  text-base font-semibold text-gray-900 dark:text-white">
-                                            {Math.round(value / 1000000)} <img className='w-4 h-4 ml-2' src='/tezos.svg' />
+                                            {Math.round(value.amt / 1000000)} <img className='w-4 h-4 ml-2' src='/tezos.svg' />
                                         </div>
                                     </div>
                                 </li>
@@ -160,7 +161,7 @@ export default function Card(props) {
                 onCancel={handleCancel}
                 okText="Send"
                 confirmLoading={isLoading}
-                onOk={() => onSend(inputValue)}
+                onOk={() => onContribute(inputValue)}
 
             >
 

@@ -11,7 +11,7 @@ export default function Hero() {
   const router = useRouter();
 
   return (
-    <div className=" flex-1  w-full flex flex-col justify-between items-center mx-auto p-6 md:p-12 lg:flex-row bg-gradient-to-r from-gray-700 via-gray-900 to-black">
+    <div className=" min-h-screen  w-full flex flex-col justify-between items-center mx-auto p-6 md:p-12 lg:flex-row bg-gradient-to-r from-gray-700 via-gray-900 to-black">
       <div className="flex flex-col p-6 space-y-10  lg:w-1/2 ">
         <h1
           className="text-4xl font-bold text-center md:text-6xl lg:max-w-xl lg:text-left bg-clip-text text-transparent bg-gradient-to-r from-rose-100 to-teal-100 "
@@ -27,7 +27,7 @@ export default function Hero() {
           From Ideas to Impact - Connect with a Diverse Community of Investors and Donors
         </p>
         <div className="mx-auto space-x-4 lg:mx-0">
-          <Button onClick={()=>router.push('/campaign/new')} className='ring-2' type="primary" shape="round" >Get Started</Button>
+          <Button onClick={()=>router.push('/campaign/all')} className='ring-2' type="primary" shape="round" >Get Started</Button>
           <Button  className='ring-2' type="primary" shape="round" >Learn More</Button>
 
 

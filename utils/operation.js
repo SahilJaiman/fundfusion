@@ -3,11 +3,12 @@ import { contractAddress } from "./contract";
 import { tezos } from "./tezos";
 
 
-export const createPostOperation = async (ipfsurl, imgurl, title, desc, type, goal) => {
+export const createPostOperation = async (ipfsurl, imgurl, title, desc, type, goal,deadline) => {
     try {
         const contractInstance = await tezos.wallet.at(contractAddress);
         const op = await contractInstance.methods.create_post(
             ipfsurl,
+            deadline,
             desc,
             goal * 1000000,
             imgurl,
@@ -20,10 +21,10 @@ export const createPostOperation = async (ipfsurl, imgurl, title, desc, type, go
     }
 };
 
-export const sendTipOperation = async (id, amt) => {
+export const contributeOperation = async (id, amt) => {
     try {
         const contractInstance = await tezos.wallet.at(contractAddress);
-        const op = await contractInstance.methods.send_tip(
+        const op = await contractInstance.methods.contribute(
             id
         ).send({
             amount: amt,
