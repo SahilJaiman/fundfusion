@@ -1,6 +1,6 @@
-import React from 'react'
+import React,{useEffect,useState} from 'react'
 import { useRouter } from 'next/navigation';
-import { Rate, ConfigProvider, theme, Button } from 'antd';
+import { Rate, ConfigProvider, theme, Button, Progress,Statistic } from 'antd';
 import ShareButton from './share';
 
 export default function CampaignCard({ campaign }) {
@@ -13,6 +13,15 @@ export default function CampaignCard({ campaign }) {
 
         return percentage;
     };
+
+    const [daysLeft, setDaysLeft] = useState(null);
+
+    useEffect(() => {
+      const deadlineDate = new Date(campaign.value.deadline);
+      const timeDiff = deadlineDate.getTime() - Date.now();
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+      setDaysLeft(daysDiff);
+    }, []);
 
 
     return (
@@ -35,9 +44,12 @@ export default function CampaignCard({ campaign }) {
                 </div>
                 {/* remaining amount */}
                 <div className='mt-2 space-y-2'>
-                    <div className="flex flex-col items-start justify-center ">
-                        <div className="font-mono flex space-x-2 text-white text-2xl font-extrabold text-center"><span>{Math.round(campaign.value.fundraised / 1000000)}</span> <img src='/tezos.svg' className='w-[30px] h-[30px] ' /></div>
-                        <div className="text-gray-500 dark:text-gray-400 font-mono">Raised of {campaign.value.fundraising_goal / 1000000}</div>
+                    <div className="flex flex-row items-center justify-between ">
+                        <div>
+                            <div className="font-mono flex space-x-2 text-white text-2xl font-extrabold text-center"><span>{Math.round(campaign.value.fundraised / 1000000)}</span> <img src='/tezos.svg' className='w-[30px] h-[30px] ' /></div>
+                            <div className="text-gray-500 dark:text-gray-400 font-mono">Raised of {campaign.value.fundraising_goal / 1000000}</div>
+                        </div>
+                        <div>       <Statistic title="Days Left" value={daysLeft} /></div>
 
                     </div>
                     <div className="relative w-full h-[5px] bg-[#3a3a43] ">

@@ -114,7 +114,7 @@ export default function Card(props) {
                 </div>
 
 
-                <button onClick={showModal} type="button" className="text-gray-900 text-lg font-bold flex-row justify-center bg-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-100 rounded-lg  px-7 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-500  w-full">
+                <button onClick={showModal} type="button" className="text-gray-900 text-lg  font-bold flex-row justify-center bg-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-100 rounded-lg  px-7 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-500  w-full">
 
                     Contribute Now
                 </button>
