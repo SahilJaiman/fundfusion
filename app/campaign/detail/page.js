@@ -9,19 +9,12 @@ import { fetchStorage } from '@/utils/tzkt';
 import axios from "axios";
 
 
-import { create } from "ipfs-http-client";
-
-var Buffer = require('buffer/').Buffer
-const infuraApiKey = '2Ow0S5v4gpn9zS7dlv448fKFYG0'
-const infuraApiSecret = '7edd32513089c463c741160b6bd08937'
-const auth = 'Basic ' + Buffer.from(infuraApiKey + ':' + infuraApiSecret).toString('base64');
 
 export default function Postpage() {
     const searchParams = useSearchParams();
     const campaignId = searchParams.get('id');
 
     const [campaign, setCampaign] = useState([]);
-    const [ipfs, setIpfs] = useState(null);
     const [content, setContent] = useState(``);
 
     async function fetchIpfsData(url) {
@@ -34,17 +27,7 @@ export default function Postpage() {
         }
     }
 
-    useEffect(() => {
-        const ipfsNode = create({
-            host: 'ipfs.infura.io',
-            port: 5001,
-            protocol: 'https',
-            headers: {
-                authorization: auth,
-            },
-        });
-        setIpfs(ipfsNode);
-    }, [])
+
 
 
     useEffect(() => {
@@ -54,10 +37,8 @@ export default function Postpage() {
             var id = storage.posts;
             const res = await axios.get(`https://api.ghostnet.tzkt.io/v1/bigmaps/${id}/keys/${campaignId}`);
             let temp = res.data;
-            console.log("Data", temp);
             setCampaign(res.data.value);
             const data = await fetchIpfsData(res.data.value.content_url);
-            console.log("IPFS data->", data);
             setContent(data);
 
         })();
