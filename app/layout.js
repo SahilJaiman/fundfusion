@@ -2,7 +2,7 @@
 import Navbar from '@/components/Navbar'
 import { ConfigProvider,theme } from 'antd'
 import './globals.css'
-export const metadata = {
+const metadata = {
   title: 'fundfusion',
   description: 'FundFusion is a blockchain-based all-in-one funding platform that provides accessible, secure, and efficient funding solutions for individuals, organizations, and causes seeking funding for their projects.',
 }
