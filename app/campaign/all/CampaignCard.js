@@ -54,7 +54,7 @@ export default function CampaignCard({ campaign }) {
                     {/* Contribute Button */}
                     <div className='flex flex-row justify-between items-center   '>
                         <Rate allowHalf />
-                        <Button onClick={() => onHandleClick(campaign.value.id)}  className="inline-flex group  items-center justify-center text-center font-medium rounded-full text-sm p-2 dark:border-blue-500 dark:text-white dark:hover:text-blue-600 ">
+                        <Button onClick={() => onHandleClick(campaign.value.id)}  className="inline-flex group  items-center justify-center text-center rounded-full  ">
                             I want to Contribute  <span className='group-hover:animate-spin group-hover:ml-1 group-hover:scale-[1.4] inline-flex duration-300 ease-in-out'>❤️</span>
                         </Button>
                     </div>
