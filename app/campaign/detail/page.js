@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation';
-import Image from 'next/image';
+
 import Card from './card';
 import CampaignOutput from './campaignOutput';
 import Vote from './vote';
@@ -75,11 +75,11 @@ export default function Postpage() {
     return (
         <div className='flex-1 p-2 sm:p-4 flex flex-col  items-center justify-start bg-black'>
 
-            <div class="px-2 py-4 font-bold text-center font-serif text-xl shadow-md shadow-slate-300 rounded-lg text-white bg-slate-800 md:text-3xl ring-2 ">{campaign.title}</div>
+            <div className="px-4 w-full max-w-sm md:max-w-lg py-4 mt-4 font-bold text-center font-serif text-xl shadow-md shadow-slate-300 rounded-lg text-white md:text-3xl ring-2 ">{campaign.title}</div>
 
-            <div className='  gap-8 p-2 sm:p-4 w-full flex flex-col justify-start md:flex-row mt-8  '>
+            <div className='  gap-8 p-2 sm:p-4 w-full flex flex-col justify-start lg:flex-row lg:justify-center mt-4  '>
                 {/* LEFT SIDE */}
-                <div className='w-full border-2 border-slate-600 rounded-lg bg-slate-800 md:w-2/3 flex flex-col justify-start items-center p-4' >
+                <div className='w-full border-2 border-slate-600 rounded-lg bg-slate-800 lg:w-2/3 flex flex-col justify-start items-center p-4' >
                     {/*  IMAGE  */}
                     <div className='w-full ring-2  rounded-lg h-64 overflow-hidden relative  group '>
                         <img className='absolute w-full h-full transition-transform duration-300 transform group-hover:scale-110  object-cover '
@@ -89,7 +89,7 @@ export default function Postpage() {
 
                     </div>
                     {/* CONTENT */}
-                    <div className='overflow-auto mt-4 rounded-xl'>
+                    <div className='overflow-auto w-full self-stretch mt-4 rounded-xl'>
                         <CampaignOutput content={content} />
                     </div>
                 </div>
@@ -97,7 +97,7 @@ export default function Postpage() {
                 <div className='w-full md:flex-1 p-2 flex md:flex-col md:justify-start items-center justify-center '>
                     <div className='md:sticky w-full flex flex-col justify-center items-center gap-6 top-20 '>
                         <Vote />
-                        <div className="w-full p-4 max-w-sm sm:max-w-xl bg-white border border-gray-200 rounded-lg shadow sm:p-6 dark:bg-gray-800 dark:border-gray-700 flex mt-2 justify-center items-center ">
+                        <div className="w-full p-4 max-w-sm sm:max-w-2xl bg-white border border-gray-200 rounded-lg shadow sm:p-6 dark:bg-gray-800 dark:border-gray-700 flex mt-2 justify-center items-center ">
                             <p className="flex-1 space-x-2 text-xl  font-bold font-mono text-white truncate">
                                 <span>Author</span>
                                 <span className="font-normal text-gray-400 font-mono hover:text-blue-600 ">

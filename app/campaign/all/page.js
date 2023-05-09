@@ -3,59 +3,81 @@ import React, { useState, useEffect } from 'react'
 import CampaignCard from './CampaignCard';
 import { fetchStorage } from '@/utils/tzkt';
 import axios from "axios";
-import { create } from "ipfs-http-client";
 
-import { Select } from 'antd';
+import { Select, Empty } from 'antd';
 
-var Buffer = require('buffer/').Buffer
-const infuraApiKey = '2Ow0S5v4gpn9zS7dlv448fKFYG0'
-const infuraApiSecret = '7edd32513089c463c741160b6bd08937'
-const auth = 'Basic ' + Buffer.from(infuraApiKey + ':' + infuraApiSecret).toString('base64');
+
+const campaignTypes = [
+    {
+        value: 'All',
+        label: 'All',
+    },
+    {
+        value: 'Crowdfunding',
+        label: 'Crowdfunding',
+    },
+    {
+        value: 'Charity',
+        label: 'Charity',
+    },
+    {
+        value: 'Investment',
+        label: 'Investment',
+    },
+    {
+        value: 'Donation',
+        label: 'Donation',
+    },
+    {
+        value: 'Lending',
+        label: 'Lending',
+    },
+]
 
 export default function Reportpage() {
     const [campaigns, setCampaigns] = useState([]);
-    const [ipfs, setIpfs] = useState(null);
+    const [filteredCampaigns, setFilteredCampaigns] = useState([]);
+    const [selectedTypes, setSelectedTypes] = useState(['All']);
+    const [loading, setLoading] = useState(false);
+
 
     const onChange = (value) => {
-        console.log(`selected ${value}`);
+        setLoading(true);
+        if (value.includes('All') || value.length == 0) {
+            setFilteredCampaigns(campaigns);
+            setLoading(false);
+            return;
+        }
+        setSelectedTypes(value);
+        const newfilteredCampaigns = campaigns.filter((campaign) => value.includes(campaign.value.type));
+        setFilteredCampaigns(newfilteredCampaigns);
+        setLoading(false);
+
     };
     const onSearch = (value) => {
         console.log('search:', value);
     };
 
-    async function fetchIpfsData(url) {
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
     useEffect(() => {
-        const ipfsNode = create({
-            host: 'ipfs.infura.io',
-            port: 5001,
-            protocol: 'https',
-            headers: {
-                authorization: auth,
-            },
-        });
-        setIpfs(ipfsNode);
-    }, [])
-
+        console.log("Filterd ", filteredCampaigns);
+    }, [filteredCampaigns])
 
     useEffect(() => {
 
         (async () => {
-            const storage = await fetchStorage();
-            var id = storage.posts;
-            const res = await axios.get(`https://api.ghostnet.tzkt.io/v1/bigmaps/${id}/keys`);
-            let temp = res.data;
-            console.log("Data", temp);
-            setCampaigns(res.data);
-            //const data = await fetchIpfsData(res.data.value.ipfs_url);
+            try {
+                const storage = await fetchStorage();
+                var id = storage.posts;
+                const res = await axios.get(`https://api.ghostnet.tzkt.io/v1/bigmaps/${id}/keys`);
+                let temp = res.data;
+                console.log("Data", temp);
+                setCampaigns(res.data);
+                setFilteredCampaigns(res.data)
+
+
+            } catch (error) {
+
+            }
 
         })();
 
@@ -64,51 +86,49 @@ export default function Reportpage() {
     return (
         <>
 
-            <div className='flex-1 w-full p-4 flex flex-col  items-center justify-center  bg-gradient-to-r bg-black'>
+            <div className='flex-1 w-full p-4 flex flex-col  items-center   bg-gradient-to-r bg-black'>
                 <div className='flex justify-center items-center w-full p-2 '>
                     <Select
-                        className='max-w-sm'
+                        className='w-full max-w-sm sm:max-w-md md:max-w-lg'
+                        mode="multiple"
+                        allowClear
                         size='large'
                         showSearch
-                        placeholder="Select a person"
+                        placeholder="Select Category"
+                        defaultValue={'All'}
                         optionFilterProp="children"
                         onChange={onChange}
                         onSearch={onSearch}
                         filterOption={(input, option) =>
                             (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                         }
-                        options={[
-                            {
-                                value: 'jack',
-                                label: 'Jack',
-                            },
-                            {
-                                value: 'lucy',
-                                label: 'Lucy',
-                            },
-                            {
-                                value: 'tom',
-                                label: 'Tom',
-                            },
-                        ]}
+                        options={campaignTypes}
+                        loading={loading}
                     />
                 </div>
 
+                {filteredCampaigns.length == 0 ?
+                    <div className='flex flex-1 justify-center items-center'>
+                        <Empty />
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+                    :
 
-                    {campaigns?.map((campaign) => {
-                        return (
-                            <CampaignCard
-                                key={campaign.value.id}
-                                campaign={campaign}
-                            />
+                    < div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
 
-                        )
-                    })}
+                        {filteredCampaigns?.map((campaign) => {
+                            return (
+                                <CampaignCard
+                                    key={campaign.value.id}
+                                    campaign={campaign}
+                                />
 
-                </div>
-            </div>
+                            )
+                        })}
+
+                    </div>
+                }
+            </div >
         </>
     )
 }
