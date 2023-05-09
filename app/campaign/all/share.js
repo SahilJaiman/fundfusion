@@ -34,7 +34,7 @@ export default function ShareButton({ id }) {
     };
 
 
-    const shareUrl = `http://localhost:3000/campaign/detail?id=${id}`;
+    const shareUrl = `https://fundfusion.vercel.app/campaign/detail?id=${id}`;
     return (
         <div className='flex flex-row'>
             <Space direction="vertical" align="center">
