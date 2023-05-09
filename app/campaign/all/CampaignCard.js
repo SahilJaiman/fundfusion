@@ -1,6 +1,7 @@
 import React from 'react'
 import { useRouter } from 'next/navigation';
 import { Rate, ConfigProvider, theme, Button } from 'antd';
+import ShareButton from './share';
 
 export default function CampaignCard({ campaign }) {
     const router = useRouter();
@@ -52,16 +53,19 @@ export default function CampaignCard({ campaign }) {
                         </p>
                     </div>
                     {/* Contribute Button */}
-                    <div className='flex flex-row justify-between items-center   '>
+
+                    <div className='flex w-full justify-between '>
                         <Rate allowHalf />
-                        <Button onClick={() => onHandleClick(campaign.value.id)}  className="inline-flex group  items-center justify-center text-center rounded-full  ">
+                        <ShareButton id={campaign.value.id} />
+
+                    </div>
+
+                    <div className='flex  w-full flex-row justify-between items-center   '>
+                        <Button onClick={() => onHandleClick(campaign.value.id)} className="inline-flex group w-full items-center justify-center text-center rounded-full  ">
                             I want to Contribute  <span className='group-hover:animate-spin group-hover:ml-1 group-hover:scale-[1.4] inline-flex duration-300 ease-in-out'>❤️</span>
                         </Button>
                     </div>
 
-                    <div className='flex justify-center w-full '>
-
-                    </div>
 
                 </div>
             </div>

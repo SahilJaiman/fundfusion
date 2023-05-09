@@ -98,10 +98,10 @@ export default function Postpage() {
                     <div className='md:sticky w-full flex flex-col justify-center items-center gap-6 top-20 '>
                         <Vote />
                         <div className="w-full p-4 max-w-sm sm:max-w-2xl bg-white border border-gray-200 rounded-lg shadow sm:p-6 dark:bg-gray-800 dark:border-gray-700 flex mt-2 justify-center items-center ">
-                            <p className="flex-1 space-x-2 text-xl  font-bold font-mono text-white truncate">
+                            <p className="flex-1 flex space-x-2 text-xl justify-between  font-bold font-mono text-white truncate">
                                 <span>Author</span>
                                 <span className="font-normal text-gray-400 font-mono hover:text-blue-600 ">
-                                    <a target="_blank" rel="noopener noreferrer" style={{ display: "table-cell" }} href={`https://ghostnet.tzkt.io/${campaign.author}/operations/`}>{campaign.author?.slice(0,10)+" ... "+campaign.author?.slice(-5)}</a>
+                                    <a target="_blank" rel="noopener noreferrer" style={{ display: "table-cell" }} href={`https://ghostnet.tzkt.io/${campaign.author}/operations/`}>{campaign.author?.slice(0,5)+" ... "+campaign.author?.slice(-5)}</a>
                                 </span>
                             </p>
                         </div>
